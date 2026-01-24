@@ -1,495 +1,202 @@
 <!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Top Viewers Overlay</title>
-  <style>
-    :root{
-      --w: 360px;
-      --radius: 16px;
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Top Viewers Overlay</title>
 
-      --text: rgba(240,246,255,.92);
-      --muted: rgba(240,246,255,.62);
+<!-- Font rõ, dễ đọc -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800;900&display=swap" rel="stylesheet">
 
-      --twitch: #9146FF;
-      --green: #00ffb2;
+<style>
+:root{
+  --w: 360px;
 
-      --gold: #ffd24a;
-      --silver: #cfd6e4;
-      --bronze: #ffb37a;
+  --bg: #6f7276;
+  --bg-row: #7c7f83;
+  --bg-header: #64676b;
 
-      --shadow: 0 16px 45px rgba(0,0,0,.55);
-      --stroke: rgba(255,255,255,.12);
-    }
+  --text: #f2f4f7;
+  --muted: #d0d3d8;
 
-    *{ box-sizing:border-box; }
-    body{
-      margin:0;
-      background: transparent;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color: var(--text);
-    }
+  --green: #19ffb4;
+  --gold: #ffd24a;
+  --silver: #e2e6ef;
+  --bronze: #ffb37a;
+}
 
-    .card{
-      width: var(--w);
-      border-radius: var(--radius);
-      overflow: hidden;
-      position: relative;
-      background: linear-gradient(180deg, rgba(20,24,32,.62), rgba(8,10,14,.50));
-      border: 1px solid var(--stroke);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-    }
+*{ box-sizing:border-box; }
+body{
+  margin:0;
+  background: transparent;
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: var(--text);
+}
 
-    .frame{
-      position:absolute;
-      inset: 8px;
-      border-radius: 13px;
-      border: 2px solid rgba(0,255,178,.20);
-      box-shadow: 0 0 0 1px rgba(145,70,255,.12) inset;
-      pointer-events:none;
-    }
+/* ===== CARD ===== */
+.card{
+  width: var(--w);
+  background: var(--bg);
+  border-radius: 16px;
+  overflow: hidden;
+}
 
-    /* ===== HEADER ===== */
-    .head{
-      padding: 10px 12px 8px 12px;
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap: 8px;
-      position: relative;
-      z-index: 1;
-    }
+/* ===== HEADER ===== */
+.head{
+  padding: 10px 12px 8px;
+  background: var(--bg-header);
+}
 
-    .left{
-      min-width: 0;
-      flex: 1 1 auto;
-      display:flex;
-      flex-direction: column;
-      gap: 6px;
-    }
+.title{
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: .5px;
+}
+.title b{ color: var(--green); }
 
-    .titleline{
-      display:flex;
-      align-items:flex-start;
-      gap: 8px;
-      min-width: 0;
-    }
+.badges{
+  margin-top: 6px;
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
 
-    .twitch-badge{
-      width: 26px; height: 26px;
-      border-radius: 9px;
-      background: rgba(145,70,255,.18);
-      border: 1px solid rgba(145,70,255,.38);
-      box-shadow: 0 0 16px rgba(145,70,255,.16);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      flex: 0 0 auto;
-      margin-top: 1px;
-    }
-    .twitch-badge svg{ width: 15px; height: 15px; display:block; }
+.badge{
+  font-size: 10px;
+  font-weight: 800;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #555;
+  color: #fff;
+}
+.badge.live{
+  background: rgba(25,255,180,.18);
+  color: var(--green);
+}
 
-    .title{
-      font-weight: 1000;
-      letter-spacing: .6px;
-      text-transform: uppercase;
-      font-size: 13px;
-      line-height: 1.12;
-      white-space: normal;
-    }
-    .title b{
-      color: var(--green);
-      text-shadow: 0 0 12px rgba(0,255,178,.18);
-    }
+/* ===== TABLE ===== */
+.table{
+  padding: 8px 10px;
+}
 
-    .subline{
-      display:flex;
-      gap: 6px;
-      align-items:center;
-      flex-wrap: wrap;
-      color: var(--muted);
-      font-size: 10.5px;
-      line-height: 1.15;
-    }
+.hdr{
+  display:grid;
+  grid-template-columns: 30px 1fr 46px 86px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
 
-    .pill{
-      font-size: 10px;
-      font-weight: 950;
-      padding: 4px 7px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.07);
-      border: 1px solid rgba(255,255,255,.10);
-      color: rgba(240,246,255,.82);
-    }
-    .pill.live{
-      background: rgba(0,255,178,.10);
-      border-color: rgba(0,255,178,.22);
-      color: rgba(0,255,178,.95);
-    }
+.rows{
+  display:flex;
+  flex-direction:column;
+  gap: 6px;
+}
 
-    /* ===== TABLE (gọn + ưu tiên tên) ===== */
-    .table{
-      padding: 8px 10px 10px 10px;
-      position: relative;
-      z-index: 1;
-    }
+/* ===== ROW ===== */
+.row{
+  display:grid;
+  grid-template-columns: 30px 1fr 46px 86px;
+  align-items:center;
+  padding: 8px 8px;
+  background: var(--bg-row);
+  border-radius: 10px;
+}
 
-    /* ✅ Time/Prize nhỏ lại để nhường chỗ tên */
-    .hdr{
-      display:grid;
-      grid-template-columns: 34px 1fr 48px 82px;
-      gap: 8px;
-      padding: 7px 9px;
-      border-radius: 12px;
-      background: rgba(0,0,0,.22);
-      border: 1px solid rgba(255,255,255,.08);
-      color: rgba(240,246,255,.70);
-      font-size: 10.5px;
-      font-weight: 850;
-      letter-spacing: .2px;
-    }
+/* ❌ bỏ viền từng tên – chỉ dùng nền */
+.rk{
+  font-size: 12px;
+  font-weight: 900;
+  text-align:center;
+}
 
-    .rows{
-      margin-top: 8px;
-      display:flex;
-      flex-direction:column;
-      gap: 6px;
-    }
+.name{
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-    /* ✅ giảm padding để overlay thấp hơn */
-    .row{
-      display:grid;
-      grid-template-columns: 34px 1fr 48px 82px;
-      gap: 8px;
-      align-items:center;
-      padding: 7px 9px;
-      border-radius: 12px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.08);
-      position: relative;
-      overflow: hidden;
-    }
+.time{
+  font-size: 11px;
+  font-weight: 700;
+  text-align:right;
+  color: var(--muted);
+}
 
-    .bar{
-      position:absolute; left:0; top:0; bottom:0;
-      width:0%;
-      background: linear-gradient(90deg, rgba(145,70,255,.16), rgba(0,255,178,.10));
-      opacity:.9;
-      pointer-events:none;
-    }
+.prize{
+  font-size: 12px;
+  font-weight: 900;
+  text-align:right;
+}
 
-    /* ✅ THU NHỎ VIÊN BO SỐ */
-    .rk{
-      width: 26px;
-      height: 22px;
-      border-radius: 9px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-weight: 1000;
-      font-size: 11px;
-      background: rgba(0,0,0,.22);
-      border: 1px solid rgba(255,255,255,.10);
-      box-shadow: 0 8px 14px rgba(0,0,0,.16);
-      position: relative;
-      z-index: 1;
-    }
+/* ===== TOP STYLES ===== */
+.row.top1 .rk,
+.row.top1 .name,
+.row.top1 .prize{ color: var(--gold); }
 
-    /* ✅ tăng size tên */
-    .name{
-      font-weight: 950;
-      font-size: 13px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      position: relative;
-      z-index: 1;
-      max-width: 210px;
-    }
+.row.top2 .rk,
+.row.top2 .name,
+.row.top2 .prize{ color: var(--silver); }
 
-    .time{
-      text-align:right;
-      font-weight: 900;
-      font-size: 11px;
-      color: rgba(240,246,255,.78);
-      font-variant-numeric: tabular-nums;
-      position: relative;
-      z-index: 1;
-    }
+.row.top3 .rk,
+.row.top3 .name,
+.row.top3 .prize{ color: var(--bronze); }
 
-    .prize{
-      text-align:right;
-      font-weight: 1000;
-      font-size: 11.5px;
-      white-space: nowrap;
-      font-variant-numeric: tabular-nums;
-      position: relative;
-      z-index: 1;
-    }
+/* ===== 4–10 đồng bộ ===== */
+.row:not(.top1):not(.top2):not(.top3) .name,
+.row:not(.top1):not(.top2):not(.top3) .prize{
+  color: #ffe07a;
+}
 
-    /* ===== TOP 1-2-3 SIÊU NỔI ===== */
-    .row.top1, .row.top2, .row.top3{
-      background: rgba(255,255,255,.075);
-    }
-
-    .row.top1{
-      border-color: rgba(255,210,74,.30);
-      box-shadow: 0 0 0 1px rgba(255,210,74,.10) inset;
-    }
-    .row.top2{
-      border-color: rgba(207,214,228,.26);
-      box-shadow: 0 0 0 1px rgba(207,214,228,.09) inset;
-    }
-    .row.top3{
-      border-color: rgba(255,179,122,.26);
-      box-shadow: 0 0 0 1px rgba(255,179,122,.09) inset;
-    }
-
-    .row.top1 .rk{
-      color: rgba(0,0,0,.90);
-      background: linear-gradient(180deg, #ffe27a, var(--gold));
-      border-color: rgba(255,210,74,.65);
-      box-shadow: 0 12px 24px rgba(255,210,74,.18);
-    }
-    .row.top2 .rk{
-      color: rgba(0,0,0,.86);
-      background: linear-gradient(180deg, #eef2fb, var(--silver));
-      border-color: rgba(207,214,228,.65);
-      box-shadow: 0 12px 24px rgba(207,214,228,.14);
-    }
-    .row.top3 .rk{
-      color: rgba(0,0,0,.88);
-      background: linear-gradient(180deg, #ffd7be, var(--bronze));
-      border-color: rgba(255,179,122,.65);
-      box-shadow: 0 12px 24px rgba(255,179,122,.14);
-    }
-
-    /* ✅ name top 1-2-3 khác biệt rõ */
-    .row.top1 .name{
-      color: rgba(255,232,150,.98);
-      text-shadow: 0 0 14px rgba(255,210,74,.20);
-    }
-    .row.top2 .name{
-      color: rgba(233,240,255,.96);
-      text-shadow: 0 0 14px rgba(207,214,228,.16);
-    }
-    .row.top3 .name{
-      color: rgba(255,222,205,.96);
-      text-shadow: 0 0 14px rgba(255,179,122,.16);
-    }
-
-    /* ✅ prize top 1-2-3 nổi và khác nhau */
-    .row.top1 .prize{
-      color: var(--gold);
-      text-shadow: 0 0 16px rgba(255,210,74,.22);
-    }
-    .row.top2 .prize{
-      color: var(--silver);
-      text-shadow: 0 0 16px rgba(207,214,228,.18);
-    }
-    .row.top3 .prize{
-      color: var(--bronze);
-      text-shadow: 0 0 16px rgba(255,179,122,.18);
-    }
-
-    /* ===== 6-10 giống nhau ===== */
-    /* Mặc định 4-10: cùng 1 style */
-    .row:not(.top1):not(.top2):not(.top3) .prize{
-      color: rgba(255,210,74,.92);
-      text-shadow: 0 0 10px rgba(255,210,74,.10);
-    }
-    .row:not(.top1):not(.top2):not(.top3) .name{
-      color: rgba(240,246,255,.92);
-      text-shadow: none;
-    }
-
-    /* OPTIONAL: nếu bạn muốn 4-5 cũng “giống 6-10” thì OK, hiện đang giống luôn */
-
-    /* ===== FOOTER ===== */
-    .foot{
-      padding: 9px 12px 10px 12px;
-      border-top: 1px solid rgba(255,255,255,.08);
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap: 8px;
-      color: rgba(240,246,255,.62);
-      font-size: 10.5px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .status{
-      display:flex;
-      align-items:center;
-      gap: 7px;
-      min-width: 0;
-    }
-    .dot{
-      width:8px; height:8px; border-radius:99px;
-      background: var(--green);
-      box-shadow: 0 0 10px rgba(0,255,178,.65);
-      flex: 0 0 auto;
-    }
-    .dot.err{
-      background: #ff4d4d;
-      box-shadow: 0 0 10px rgba(255,77,77,.55);
-    }
-    .status span{
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 200px;
-    }
-
-    .updatedFoot{
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 140px;
-      text-align:right;
-      font-variant-numeric: tabular-nums;
-      color: rgba(240,246,255,.70);
-    }
-  </style>
+/* ===== FOOTER ===== */
+.foot{
+  padding: 8px 10px;
+  font-size: 10px;
+  color: var(--muted);
+  display:flex;
+  justify-content:space-between;
+}
+</style>
 </head>
 
 <body>
-  <div class="card">
-    <div class="frame"></div>
+<div class="card">
 
-    <div class="head">
-      <div class="left">
-        <div class="titleline">
-          <div class="twitch-badge" title="Twitch">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="#9146FF" d="M4 3h18v12l-5 5h-4l-2 2H8v-2H4V3z"/>
-              <path fill="#fff" d="M6 5v12h4v2l2-2h5l3-3V5H6zm5 8H9V8h2v5zm5 0h-2V8h2v5z"/>
-            </svg>
-          </div>
-          <div class="title">🏆 <b>TOP VIEWERS</b> – THIS MONTH</div>
-        </div>
-
-        <div class="subline">
-          <span class="pill live">Real time only</span>
-          <span class="pill" id="resetText">Reset: 23:59 • Day 14 (VN time)</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="table">
-      <div class="hdr">
-        <div>#</div>
-        <div>Viewer</div>
-        <div style="text-align:right;">Time</div>
-        <div style="text-align:right;">Prize</div>
-      </div>
-      <div class="rows" id="rows"></div>
-    </div>
-
-    <div class="foot">
-      <div class="status">
-        <span id="dot" class="dot"></span>
-        <span id="status">Loading…</span>
-      </div>
-      <div class="updatedFoot" id="updatedFoot">Updated: —</div>
+  <div class="head">
+    <div class="title">🏆 <b>TOP VIEWERS</b> – THIS MONTH</div>
+    <div class="badges">
+      <span class="badge live">Real time only</span>
+      <span class="badge">Reset 23:59 Day 14 (VN)</span>
     </div>
   </div>
 
-  <script>
-    /***** CONFIG *****/
-    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyoYia8jIipN-Hq95blwQ8dkimXdy8uoNp_bvq1Ie1l7ZeQB0_QRMjBqsx7gwWg-kej8A/exec";
-    const REFRESH_MS = 15000;
+  <div class="table">
+    <div class="hdr">
+      <div>#</div><div>Viewer</div><div>Time</div><div>Prize</div>
+    </div>
 
-    const $rows = document.getElementById("rows");
-    const $status = document.getElementById("status");
-    const $dot = document.getElementById("dot");
-    const $resetText = document.getElementById("resetText");
-    const $updatedFoot = document.getElementById("updatedFoot");
+    <div class="rows">
+      <div class="row top1"><div class="rk">1</div><div class="name">michalh1899</div><div class="time">0m</div><div class="prize">10,000</div></div>
+      <div class="row top2"><div class="rk">2</div><div class="name">aguerrarp</div><div class="time">0m</div><div class="prize">9,000</div></div>
+      <div class="row top3"><div class="rk">3</div><div class="name">nguyentienliem</div><div class="time">0m</div><div class="prize">8,000</div></div>
+      <div class="row"><div class="rk">4</div><div class="name">leitoza1189</div><div class="time">0m</div><div class="prize">7,000</div></div>
+      <div class="row"><div class="rk">5</div><div class="name">donquixote3011</div><div class="time">0m</div><div class="prize">6,000</div></div>
+      <div class="row"><div class="rk">6</div><div class="name">quangvu167</div><div class="time">0m</div><div class="prize">5,000</div></div>
+      <div class="row"><div class="rk">7</div><div class="name">darcherman</div><div class="time">0m</div><div class="prize">4,000</div></div>
+      <div class="row"><div class="rk">8</div><div class="name">muniingg</div><div class="time">0m</div><div class="prize">3,000</div></div>
+      <div class="row"><div class="rk">9</div><div class="name">mateustmtp</div><div class="time">0m</div><div class="prize">2,000</div></div>
+      <div class="row"><div class="rk">10</div><div class="name">leopolaroficial</div><div class="time">0m</div><div class="prize">1,000</div></div>
+    </div>
+  </div>
 
-    const esc = (s)=> String(s ?? "").replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]));
-    const fmt = (n)=> Number(n||0).toLocaleString("en-US");
+  <div class="foot">
+    <span>Live ranking</span>
+    <span>Updated: 2026-01-24</span>
+  </div>
 
-    function shortName(raw, maxLen=16){
-      const s = String(raw ?? "").trim();
-      if(!s) return "-";
-      if(s.length <= maxLen) return s;
-      // giữ đầu + cuối để vẫn nhận ra
-      const head = s.slice(0, 10);
-      const tail = s.slice(-3);
-      return head + "…" + tail;
-    }
-
-    function rowClass(rank){
-      if(rank===1) return "row top1";
-      if(rank===2) return "row top2";
-      if(rank===3) return "row top3";
-      return "row";
-    }
-
-    function render(data){
-      const list = Array.isArray(data.top10) ? data.top10 : [];
-      const maxPts = Math.max(1, ...list.map(x=> Number(x.season_points||0)));
-
-      $rows.innerHTML = "";
-      list.forEach(x=>{
-        const rank = Number(x.rank||0);
-        const usernameRaw = x.username || "-";
-        const usernameShort = shortName(usernameRaw, 16);
-
-        const nameSafe = esc(usernameShort);
-        const nameFull = esc(usernameRaw);
-
-        const pts  = Number(x.season_points||0);
-        const prize= Number(x.prize_mcoins||0);
-
-        // TIME: đang dùng points = minutes (0m)
-        const timeVal = pts;
-
-        const div = document.createElement("div");
-        div.className = rowClass(rank);
-
-        const bar = document.createElement("div");
-        bar.className = "bar";
-        bar.style.width = Math.max(0, Math.min(100, (pts/maxPts)*100)) + "%";
-        div.appendChild(bar);
-
-        div.insertAdjacentHTML("beforeend", `
-          <div class="rk">${rank||"-"}</div>
-          <div class="name" title="${nameFull}">${nameSafe}</div>
-          <div class="time">${fmt(timeVal)}m</div>
-          <div class="prize">${fmt(prize)} MCoins</div>
-        `);
-
-        $rows.appendChild(div);
-      });
-
-      if (data.reset_rule) $resetText.textContent = data.reset_rule;
-
-      const updated = data.updated_at || "—";
-      $updatedFoot.textContent = "Updated: " + updated;
-
-      $status.textContent = "Live ranking • Monthly leaderboard";
-      $dot.classList.remove("err");
-    }
-
-    async function load(){
-      try{
-        $status.textContent = "Loading…";
-        const res = await fetch(WEBAPP_URL, { cache: "no-store" });
-        if(!res.ok) throw new Error("HTTP " + res.status);
-        const data = await res.json();
-        render(data);
-      }catch(e){
-        $status.textContent = "Load failed: " + (e?.message || e);
-        $dot.classList.add("err");
-      }
-    }
-
-    load();
-    setInterval(load, REFRESH_MS);
-  </script>
+</div>
 </body>
 </html>
