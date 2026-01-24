@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Top Viewers Overlay</title>
 
-<!-- Font rõ, dễ đọc -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800;900&display=swap" rel="stylesheet">
 
 <style>
@@ -20,9 +19,13 @@
   --muted: #d0d3d8;
 
   --green: #19ffb4;
+
   --gold: #ffd24a;
   --silver: #e2e6ef;
   --bronze: #ffb37a;
+
+  /* ✅ màu đồng bộ cho Top 6-10 */
+  --norm: #ffe07a;
 }
 
 *{ box-sizing:border-box; }
@@ -33,7 +36,6 @@ body{
   color: var(--text);
 }
 
-/* ===== CARD ===== */
 .card{
   width: var(--w);
   background: var(--bg);
@@ -45,12 +47,30 @@ body{
 .head{
   padding: 10px 12px 8px;
   background: var(--bg-header);
+  position: relative;
 }
+
+/* ✅ Twitch logo top-right */
+.twitchCorner{
+  position:absolute;
+  right: 10px;
+  top: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: rgba(145,70,255,.22);
+  box-shadow: 0 0 0 1px rgba(145,70,255,.30) inset;
+}
+.twitchCorner svg{ width: 18px; height: 18px; display:block; }
 
 .title{
   font-size: 14px;
   font-weight: 900;
   letter-spacing: .5px;
+  padding-right: 42px; /* chừa chỗ logo */
 }
 .title b{ color: var(--green); }
 
@@ -94,7 +114,6 @@ body{
   gap: 6px;
 }
 
-/* ===== ROW ===== */
 .row{
   display:grid;
   grid-template-columns: 30px 1fr 46px 86px;
@@ -104,11 +123,11 @@ body{
   border-radius: 10px;
 }
 
-/* ❌ bỏ viền từng tên – chỉ dùng nền */
 .rk{
   font-size: 12px;
   font-weight: 900;
   text-align:center;
+  color: var(--muted);
 }
 
 .name{
@@ -132,23 +151,47 @@ body{
   text-align:right;
 }
 
-/* ===== TOP STYLES ===== */
-.row.top1 .rk,
+/* ===== TOP 1-2-3: khác biệt hoàn toàn ===== */
+.row.top1{
+  background: rgba(255,210,74,.14);
+}
+.row.top2{
+  background: rgba(226,230,239,.12);
+}
+.row.top3{
+  background: rgba(255,179,122,.12);
+}
+
+.row.top2 .rk, .row.top2 .name, .row.top2 .prize{ color: var(--silver); }
+.row.top3 .rk, .row.top3 .name, .row.top3 .prize{ color: var(--bronze); }
+
+/* ✅ TOP 1: đổi màu (animated gradient) cho name + prize */
+@keyframes rainbowShift{
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.row.top1 .rk{ color: var(--gold); }
+
 .row.top1 .name,
-.row.top1 .prize{ color: var(--gold); }
+.row.top1 .prize{
+  background: linear-gradient(90deg, #ffd24a, #19ffb4, #9146ff, #ffd24a);
+  background-size: 300% 100%;
+  animation: rainbowShift 2.6s ease-in-out infinite;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 8px rgba(255,210,74,.18));
+}
 
-.row.top2 .rk,
-.row.top2 .name,
-.row.top2 .prize{ color: var(--silver); }
-
-.row.top3 .rk,
-.row.top3 .name,
-.row.top3 .prize{ color: var(--bronze); }
-
-/* ===== 4–10 đồng bộ ===== */
+/* ===== TOP 6-10 giống nhau hoàn toàn ===== */
+/* Mình cho 4-10 đồng bộ luôn để nhìn “đều” như bạn muốn */
 .row:not(.top1):not(.top2):not(.top3) .name,
 .row:not(.top1):not(.top2):not(.top3) .prize{
-  color: #ffe07a;
+  color: var(--norm);
+}
+.row:not(.top1):not(.top2):not(.top3) .rk{
+  color: rgba(240,246,255,.80);
 }
 
 /* ===== FOOTER ===== */
@@ -166,7 +209,15 @@ body{
 <div class="card">
 
   <div class="head">
+    <div class="twitchCorner" title="Twitch">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="#9146FF" d="M4 3h18v12l-5 5h-4l-2 2H8v-2H4V3z"/>
+        <path fill="#fff" d="M6 5v12h4v2l2-2h5l3-3V5H6zm5 8H9V8h2v5zm5 0h-2V8h2v5z"/>
+      </svg>
+    </div>
+
     <div class="title">🏆 <b>TOP VIEWERS</b> – THIS MONTH</div>
+
     <div class="badges">
       <span class="badge live">Real time only</span>
       <span class="badge">Reset 23:59 Day 14 (VN)</span>
@@ -178,10 +229,11 @@ body{
       <div>#</div><div>Viewer</div><div>Time</div><div>Prize</div>
     </div>
 
-    <div class="rows">
+    <div class="rows" id="rows">
       <div class="row top1"><div class="rk">1</div><div class="name">michalh1899</div><div class="time">0m</div><div class="prize">10,000</div></div>
       <div class="row top2"><div class="rk">2</div><div class="name">aguerrarp</div><div class="time">0m</div><div class="prize">9,000</div></div>
       <div class="row top3"><div class="rk">3</div><div class="name">nguyentienliem</div><div class="time">0m</div><div class="prize">8,000</div></div>
+
       <div class="row"><div class="rk">4</div><div class="name">leitoza1189</div><div class="time">0m</div><div class="prize">7,000</div></div>
       <div class="row"><div class="rk">5</div><div class="name">donquixote3011</div><div class="time">0m</div><div class="prize">6,000</div></div>
       <div class="row"><div class="rk">6</div><div class="name">quangvu167</div><div class="time">0m</div><div class="prize">5,000</div></div>
@@ -198,5 +250,7 @@ body{
   </div>
 
 </div>
+
+<!-- Nếu bạn đang dùng JS fetch, giữ nguyên JS cũ và chỉ thay phần HTML/CSS bên trên -->
 </body>
 </html>
