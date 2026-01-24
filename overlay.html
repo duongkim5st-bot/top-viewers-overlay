@@ -1,215 +1,333 @@
 <!doctype html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Top Viewers Overlay</title>
   <style>
     :root{
-      --bg: rgba(10,10,10,.78);
-      --bd: rgba(0,255,156,.35);
-      --bd2: rgba(0,255,156,.18);
-      --kick: #00ff9c;
-      --txt: #ffffff;
-      --muted: rgba(255,255,255,.75);
-      --gold: rgba(255,215,0,.22);
-      --silver: rgba(192,192,192,.20);
-      --bronze: rgba(205,127,50,.22);
+      --bg: rgba(10,12,16,.55);
+      --glass: rgba(18,22,30,.55);
+      --stroke: rgba(0,255,170,.20);
+      --text: rgba(235,245,255,.92);
+      --muted: rgba(235,245,255,.60);
+      --green: #00ffb2;
+      --gold: #ffd24a;
+      --red: #ff3b3b;
+      --shadow: 0 14px 40px rgba(0,0,0,.45);
+      --radius: 18px;
+      --rowH: 34px;
+      --w: 420px;
     }
+
     *{ box-sizing:border-box; }
     body{
       margin:0;
-      background:transparent;
-      font-family: Arial, Helvetica, sans-serif;
-      color:var(--txt);
+      background: transparent;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
     }
 
     .card{
-      width: 390px;
-      border:2px solid var(--bd);
-      border-radius:14px;
-      background:var(--bg);
-      overflow:hidden;
-      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+      width: var(--w);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(25,30,40,.65), rgba(10,12,16,.45));
+      border: 1px solid rgba(0,255,178,.22);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+      backdrop-filter: blur(10px);
+    }
+    .card::before{
+      content:"";
+      position:absolute; inset:-80px -80px auto -80px;
+      height:160px;
+      background: radial-gradient(circle at 20% 20%, rgba(0,255,178,.22), transparent 60%),
+                  radial-gradient(circle at 80% 40%, rgba(255,210,74,.18), transparent 55%);
+      pointer-events:none;
     }
 
-    .hd{
-      padding:10px 12px;
-      border-bottom:1px solid var(--bd2);
-      text-align:center;
-    }
-    .t1{
-      font-weight:800;
-      color:var(--kick);
-      font-size:16px;
-      letter-spacing:.4px;
-    }
-    .t2{
-      opacity:.85;
-      font-size:11px;
-      margin-top:4px;
-    }
-
-    .tbl{ padding:8px 10px 10px; }
-    .row{
-      display:grid;
-      grid-template-columns: 34px 1fr 70px 92px;
-      gap:8px;
-      align-items:center;
-      padding:6px;
-      border-radius:10px;
-    }
     .head{
-      opacity:.85;
-      font-size:11px;
-      color:var(--muted);
-    }
-    .item{
-      font-size:12px;
-      background:rgba(255,255,255,.04);
-      margin-top:6px;
-      border:1px solid rgba(255,255,255,.06);
+      padding: 14px 14px 10px 14px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 10px;
+      position: relative;
+      z-index: 1;
     }
 
-    .r{ text-align:center; font-weight:800; }
-    .name{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .time{ text-align:right; color: rgba(255,255,255,.92); }
-    .pr{ text-align:right; font-weight:800; color:#ffd700; }
+    .title{
+      display:flex;
+      flex-direction:column;
+      gap: 4px;
+      line-height:1.1;
+    }
+    .title .top{
+      font-weight: 900;
+      letter-spacing: .6px;
+      font-size: 15px;
+      text-transform: uppercase;
+      display:flex;
+      align-items:center;
+      gap: 8px;
+    }
+    .pill{
+      font-size: 11px;
+      color: rgba(0,0,0,.86);
+      background: linear-gradient(90deg, var(--green), #78ffd6);
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-weight: 800;
+    }
+    .sub{
+      font-size: 11px;
+      color: var(--muted);
+    }
 
-    .top1{ background: rgba(255,215,0,.10); border:1px solid var(--gold); }
-    .top2{ background: rgba(192,192,192,.10); border:1px solid var(--silver); }
-    .top3{ background: rgba(205,127,50,.10); border:1px solid var(--bronze); }
+    .meta{
+      text-align:right;
+      font-size: 11px;
+      color: var(--muted);
+      min-width: 120px;
+    }
+    .meta b{ color: var(--text); font-weight: 800; }
 
-    .ft{
-      padding:0 12px 10px;
-      text-align:center;
-      font-size:10px;
-      opacity:.75;
-      min-height: 18px;
-      white-space:nowrap;
+    .table{
+      padding: 8px 10px 12px 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hdr{
+      display:grid;
+      grid-template-columns: 34px 1fr 84px 92px;
+      gap: 10px;
+      padding: 8px 10px;
+      color: rgba(235,245,255,.70);
+      font-size: 11px;
+      letter-spacing: .35px;
+      border-top: 1px solid rgba(255,255,255,.08);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.18);
+      border-radius: 12px;
+    }
+
+    .rows{
+      margin-top: 8px;
+      display:flex;
+      flex-direction:column;
+      gap: 6px;
+    }
+
+    .row{
+      height: var(--rowH);
+      display:grid;
+      grid-template-columns: 34px 1fr 84px 92px;
+      gap: 10px;
+      align-items:center;
+      padding: 0 10px;
+      border-radius: 12px;
+      background: rgba(0,0,0,.20);
+      border: 1px solid rgba(255,255,255,.07);
+      position: relative;
       overflow:hidden;
-      text-overflow:ellipsis;
     }
 
+    .row::before{
+      content:"";
+      position:absolute; inset:0;
+      background: linear-gradient(90deg, rgba(0,255,178,.18), transparent 55%);
+      opacity: 0;
+      transition: opacity .2s ease;
+      pointer-events:none;
+    }
+    .row:hover::before{ opacity: 1; }
+
+    .rk{
+      font-weight: 900;
+      font-size: 12px;
+      color: rgba(0,0,0,.85);
+      width: 26px;
+      height: 22px;
+      border-radius: 8px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: rgba(0,255,178,.75);
+    }
+
+    .name{
+      font-weight: 800;
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding-right: 6px;
+    }
+
+    .pts{
+      font-variant-numeric: tabular-nums;
+      text-align:right;
+      color: rgba(235,245,255,.86);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .prz{
+      text-align:right;
+      font-weight: 900;
+      font-size: 12px;
+      color: var(--gold);
+      text-shadow: 0 0 14px rgba(255,210,74,.25);
+    }
+
+    .bar{
+      position:absolute;
+      left:0; top:0; bottom:0;
+      width:0%;
+      background: linear-gradient(90deg, rgba(255,210,74,.14), rgba(0,255,178,.10));
+      pointer-events:none;
+    }
+
+    /* Top 1-3 styling */
+    .top1{ border-color: rgba(255,210,74,.28); }
+    .top1 .rk{ background: linear-gradient(90deg, #ffd24a, #ffef9b); }
+    .top1 .prz{ color:#ffe27a; }
+
+    .top2{ border-color: rgba(0,255,178,.24); }
+    .top2 .rk{ background: linear-gradient(90deg, #00ffb2, #88ffe1); }
+
+    .top3{ border-color: rgba(255,90,90,.18); }
+    .top3 .rk{ background: linear-gradient(90deg, #ff3b3b, #ff9a9a); color: rgba(0,0,0,.88); }
+
+    .foot{
+      padding: 10px 14px 12px 14px;
+      border-top: 1px solid rgba(255,255,255,.08);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      color: rgba(235,245,255,.62);
+      font-size: 11px;
+      position: relative;
+      z-index: 1;
+    }
+    .status{
+      max-width: 65%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
     .badge{
-      display:inline-block;
-      padding:2px 8px;
-      border-radius:999px;
-      border:1px solid rgba(0,255,156,.25);
-      background: rgba(0,255,156,.07);
-      color: rgba(255,255,255,.9);
-      font-size:10px;
-      margin-left:6px;
-      vertical-align:middle;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    .dot{
+      width:8px; height:8px; border-radius:99px;
+      background: var(--green);
+      box-shadow: 0 0 10px rgba(0,255,178,.65);
+    }
+    .dot.err{
+      background: #ff4d4d;
+      box-shadow: 0 0 10px rgba(255,77,77,.55);
     }
   </style>
 </head>
-
 <body>
   <div class="card">
-    <div class="hd">
-      <div class="t1">🏆 TOP VIEWERS – THIS MONTH <span class="badge">Real time only</span></div>
-      <div class="t2">Reset: 23:59 • Day 14 (VN)</div>
-    </div>
-
-    <div class="tbl">
-      <div class="row head">
-        <div class="r">#</div>
-        <div>Viewer</div>
-        <div class="time">Time</div>
-        <div class="pr">Prize</div>
+    <div class="head">
+      <div class="title">
+        <div class="top">🏆 TOP VIEWERS <span class="pill">THIS MONTH</span></div>
+        <div class="sub">Reset: 23:59 • Day 14 (VN time) • Prize: 10,000 → 1,000 MCoins</div>
       </div>
-      <div id="rows"></div>
+      <div class="meta">
+        Updated<br><b id="updated">—</b>
+      </div>
     </div>
 
-    <div class="ft" id="updated">Loading…</div>
+    <div class="table">
+      <div class="hdr">
+        <div>#</div>
+        <div>Viewer</div>
+        <div style="text-align:right;">Points</div>
+        <div style="text-align:right;">Prize</div>
+      </div>
+      <div class="rows" id="rows"></div>
+    </div>
+
+    <div class="foot">
+      <div class="badge"><span id="dot" class="dot"></span><span class="status" id="status">Loading…</span></div>
+      <div id="rule">—</div>
+    </div>
   </div>
 
   <script>
-    // ✅ DÁN ĐÚNG WEB APP CỦA BẠN Ở ĐÂY
-    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyoYia8jIipN-Hq95blwQ8dkimXdy8uoNp_bvq1Ie1l7ZeQB0_QRMjBqsx7gwWg-kej8A/exec";
-
-    // refresh mỗi 15s (đủ mượt, không spam)
+    /***** CHANGE THIS *****/
+    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyoYia8jIipN-Hq95blwQ8dkimXdy8uoNp_bvq1Ie1l7ZeQB0_QRMjBqsx7gwWg-kej8A/exec"; // must return JSON with {updated_at, reset_rule, top10:[...]}
     const REFRESH_MS = 15000;
 
-    function fmtTime(mins){
-      mins = Math.max(0, Math.floor(Number(mins || 0)));
-      const h = Math.floor(mins / 60);
-      const m = mins % 60;
-      return h > 0 ? `${h}h ${m}m` : `${m}m`;
-    }
-    function fmtCoins(n){
-      return Number(n || 0).toLocaleString("en-US") + " MCoins";
-    }
-    function esc(s){
-      return String(s || "").replace(/[&<>"']/g, m => ({
-        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-      }[m]));
+    const $rows = document.getElementById("rows");
+    const $updated = document.getElementById("updated");
+    const $status = document.getElementById("status");
+    const $rule = document.getElementById("rule");
+    const $dot = document.getElementById("dot");
+
+    const esc = (s)=> String(s ?? "").replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]));
+    const fmt = (n)=> Number(n||0).toLocaleString("en-US");
+
+    function rowClass(rank){
+      if(rank===1) return "row top1";
+      if(rank===2) return "row top2";
+      if(rank===3) return "row top3";
+      return "row";
     }
 
-    // ✅ NORMALIZE: KHÔNG BAO GIỜ ĐẢO CỘT
-    // - Nếu top10 là object: {rank, username, minutes, prize_mcoins}
-    // - Nếu top10 là array: [rank, username, points, minutes, prize, updated_at]
-    function normalizeRow(x){
-      if (x && typeof x === "object" && !Array.isArray(x)) {
-        return {
-          rank: Number(x.rank || 0),
-          username: String(x.username || "-"),
-          minutes: Number(x.minutes || 0),
-          prize_mcoins: Number(x.prize_mcoins || 0)
-        };
-      }
-      if (Array.isArray(x)) {
-        return {
-          rank: Number(x[0] || 0),
-          username: String(x[1] || "-"),
-          minutes: Number(x[3] || 0),
-          prize_mcoins: Number(x[4] || 0)
-        };
-      }
-      return { rank: 0, username: "-", minutes: 0, prize_mcoins: 0 };
-    }
+    function render(data){
+      const list = Array.isArray(data.top10) ? data.top10 : [];
+      const maxPts = Math.max(1, ...list.map(x=> Number(x.season_points||0)));
 
-    // lọc username “rác” (tránh insertBefore/window/script...)
-    function isValidUser(u){
-      const s = String(u || "").trim();
-      if (s === "-" || !s) return false;
-      return /^[A-Za-z0-9_]{3,25}$/.test(s);
+      $rows.innerHTML = "";
+      list.forEach(x=>{
+        const rank = Number(x.rank||0);
+        const name = esc(x.username || "-");
+        const pts = Number(x.season_points||0);
+        const prize = Number(x.prize_mcoins||0);
+
+        const div = document.createElement("div");
+        div.className = rowClass(rank);
+
+        const bar = document.createElement("div");
+        bar.className = "bar";
+        bar.style.width = Math.max(0, Math.min(100, (pts/maxPts)*100)) + "%";
+        div.appendChild(bar);
+
+        div.insertAdjacentHTML("beforeend", `
+          <div class="rk">${rank||"-"}</div>
+          <div class="name" title="${name}">${name}</div>
+          <div class="pts">${fmt(pts)}</div>
+          <div class="prz">${fmt(prize)} MCoins</div>
+        `);
+
+        $rows.appendChild(div);
+      });
+
+      $updated.textContent = data.updated_at || "—";
+      $rule.textContent = data.reset_rule || "";
+      $status.textContent = "Live ranking • Monthly delta";
+      $dot.classList.remove("err");
     }
 
     async function load(){
-      const el = document.getElementById("rows");
-      const up = document.getElementById("updated");
-
       try{
+        $status.textContent = "Loading…";
         const res = await fetch(WEBAPP_URL, { cache: "no-store" });
-        if (!res.ok) throw new Error("HTTP " + res.status);
-
+        if(!res.ok) throw new Error("HTTP " + res.status);
         const data = await res.json();
-        const list = Array.isArray(data.top10) ? data.top10 : [];
-
-        el.innerHTML = "";
-
-        const normalized = list.map(normalizeRow)
-          .filter(x => x.rank >= 1 && x.rank <= 10)
-          .filter(x => isValidUser(x.username) || x.username === "-");
-
-        normalized.forEach(x => {
-          const cls = x.rank === 1 ? "top1" : x.rank === 2 ? "top2" : x.rank === 3 ? "top3" : "";
-          const div = document.createElement("div");
-          div.className = `row item ${cls}`;
-          div.innerHTML = `
-            <div class="r">${x.rank}</div>
-            <div class="name">${esc(x.username)}</div>
-            <div class="time">${fmtTime(x.minutes)}</div>
-            <div class="pr">${fmtCoins(x.prize_mcoins)}</div>
-          `;
-          el.appendChild(div);
-        });
-
-        up.textContent = "Updated: " + (data.updated_at || "");
+        render(data);
       }catch(e){
-        up.textContent = "Load failed: " + (e && e.message ? e.message : e);
+        $status.textContent = "Load failed: " + (e?.message || e);
+        $dot.classList.add("err");
       }
     }
 
