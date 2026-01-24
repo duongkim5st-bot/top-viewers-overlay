@@ -19,13 +19,6 @@
   --muted: #d0d3d8;
 
   --green: #19ffb4;
-
-  --gold: #ffd24a;
-  --silver: #e2e6ef;
-  --bronze: #ffb37a;
-
-  /* ✅ màu đồng bộ cho Top 6-10 */
-  --norm: #ffe07a;
 }
 
 *{ box-sizing:border-box; }
@@ -50,7 +43,7 @@ body{
   position: relative;
 }
 
-/* ✅ Twitch logo top-right */
+/* Twitch logo góc phải */
 .twitchCorner{
   position:absolute;
   right: 10px;
@@ -61,16 +54,15 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
-  background: rgba(145,70,255,.22);
-  box-shadow: 0 0 0 1px rgba(145,70,255,.30) inset;
+  background: rgba(145,70,255,.25);
 }
-.twitchCorner svg{ width: 18px; height: 18px; display:block; }
+.twitchCorner svg{ width: 18px; height: 18px; }
 
 .title{
   font-size: 14px;
   font-weight: 900;
   letter-spacing: .5px;
-  padding-right: 42px; /* chừa chỗ logo */
+  padding-right: 44px;
 }
 .title b{ color: var(--green); }
 
@@ -80,17 +72,15 @@ body{
   gap:6px;
   flex-wrap:wrap;
 }
-
 .badge{
   font-size: 10px;
   font-weight: 800;
   padding: 4px 8px;
   border-radius: 999px;
   background: #555;
-  color: #fff;
 }
 .badge.live{
-  background: rgba(25,255,180,.18);
+  background: rgba(25,255,180,.2);
   color: var(--green);
 }
 
@@ -107,6 +97,7 @@ body{
   color: var(--muted);
   margin-bottom: 6px;
 }
+.prizeHdr{ text-align:center; }
 
 .rows{
   display:flex;
@@ -118,21 +109,43 @@ body{
   display:grid;
   grid-template-columns: 30px 1fr 46px 86px;
   align-items:center;
-  padding: 8px 8px;
+  padding: 8px;
   background: var(--bg-row);
   border-radius: 10px;
 }
 
 .rk{
-  font-size: 12px;
-  font-weight: 900;
   text-align:center;
-  color: var(--muted);
+  font-weight: 900;
+  font-size: 12px;
+}
+
+/* ===== GRADIENT CHỮ ===== */
+@keyframes colorShift{
+  0%{ background-position: 0% 50%; }
+  50%{ background-position: 100% 50%; }
+  100%{ background-position: 0% 50%; }
+}
+
+.name,
+.prize{
+  font-weight: 900;
+  background: linear-gradient(
+    90deg,
+    #ffd24a,
+    #19ffb4,
+    #9146ff,
+    #ffd24a
+  );
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: colorShift 6s linear infinite;
 }
 
 .name{
   font-size: 13px;
-  font-weight: 800;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -147,51 +160,28 @@ body{
 
 .prize{
   font-size: 12px;
-  font-weight: 900;
-  text-align:right;
+  text-align:center;
 }
 
-/* ===== TOP 1-2-3: khác biệt hoàn toàn ===== */
-.row.top1{
-  background: rgba(255,210,74,.14);
-}
-.row.top2{
-  background: rgba(226,230,239,.12);
-}
-.row.top3{
-  background: rgba(255,179,122,.12);
-}
-
-.row.top2 .rk, .row.top2 .name, .row.top2 .prize{ color: var(--silver); }
-.row.top3 .rk, .row.top3 .name, .row.top3 .prize{ color: var(--bronze); }
-
-/* ✅ TOP 1: đổi màu (animated gradient) cho name + prize */
-@keyframes rainbowShift{
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-.row.top1 .rk{ color: var(--gold); }
-
+/* TOP 1 nổi bật nhất */
 .row.top1 .name,
 .row.top1 .prize{
-  background: linear-gradient(90deg, #ffd24a, #19ffb4, #9146ff, #ffd24a);
-  background-size: 300% 100%;
-  animation: rainbowShift 2.6s ease-in-out infinite;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  filter: drop-shadow(0 0 8px rgba(255,210,74,.18));
+  animation-duration: 2.5s;
+  filter: drop-shadow(0 0 8px rgba(255,210,74,.35));
 }
 
-/* ===== TOP 6-10 giống nhau hoàn toàn ===== */
-/* Mình cho 4-10 đồng bộ luôn để nhìn “đều” như bạn muốn */
+/* TOP 2–3 vừa */
+.row.top2 .name,
+.row.top2 .prize,
+.row.top3 .name,
+.row.top3 .prize{
+  animation-duration: 4s;
+}
+
+/* 4–10 chậm hơn */
 .row:not(.top1):not(.top2):not(.top3) .name,
 .row:not(.top1):not(.top2):not(.top3) .prize{
-  color: var(--norm);
-}
-.row:not(.top1):not(.top2):not(.top3) .rk{
-  color: rgba(240,246,255,.80);
+  animation-duration: 7s;
 }
 
 /* ===== FOOTER ===== */
@@ -209,48 +199,97 @@ body{
 <div class="card">
 
   <div class="head">
-    <div class="twitchCorner" title="Twitch">
-      <svg viewBox="0 0 24 24" aria-hidden="true">
+    <div class="twitchCorner">
+      <svg viewBox="0 0 24 24">
         <path fill="#9146FF" d="M4 3h18v12l-5 5h-4l-2 2H8v-2H4V3z"/>
         <path fill="#fff" d="M6 5v12h4v2l2-2h5l3-3V5H6zm5 8H9V8h2v5zm5 0h-2V8h2v5z"/>
       </svg>
     </div>
 
     <div class="title">🏆 <b>TOP VIEWERS</b> – THIS MONTH</div>
-
     <div class="badges">
       <span class="badge live">Real time only</span>
-      <span class="badge">Reset 23:59 Day 14 (VN)</span>
+      <span class="badge" id="resetText">Reset …</span>
     </div>
   </div>
 
   <div class="table">
     <div class="hdr">
-      <div>#</div><div>Viewer</div><div>Time</div><div>Prize</div>
+      <div>#</div>
+      <div>Viewer</div>
+      <div>Time</div>
+      <div class="prizeHdr">Prize (MCoins)</div>
     </div>
-
-    <div class="rows" id="rows">
-      <div class="row top1"><div class="rk">1</div><div class="name">michalh1899</div><div class="time">0m</div><div class="prize">10,000</div></div>
-      <div class="row top2"><div class="rk">2</div><div class="name">aguerrarp</div><div class="time">0m</div><div class="prize">9,000</div></div>
-      <div class="row top3"><div class="rk">3</div><div class="name">nguyentienliem</div><div class="time">0m</div><div class="prize">8,000</div></div>
-
-      <div class="row"><div class="rk">4</div><div class="name">leitoza1189</div><div class="time">0m</div><div class="prize">7,000</div></div>
-      <div class="row"><div class="rk">5</div><div class="name">donquixote3011</div><div class="time">0m</div><div class="prize">6,000</div></div>
-      <div class="row"><div class="rk">6</div><div class="name">quangvu167</div><div class="time">0m</div><div class="prize">5,000</div></div>
-      <div class="row"><div class="rk">7</div><div class="name">darcherman</div><div class="time">0m</div><div class="prize">4,000</div></div>
-      <div class="row"><div class="rk">8</div><div class="name">muniingg</div><div class="time">0m</div><div class="prize">3,000</div></div>
-      <div class="row"><div class="rk">9</div><div class="name">mateustmtp</div><div class="time">0m</div><div class="prize">2,000</div></div>
-      <div class="row"><div class="rk">10</div><div class="name">leopolaroficial</div><div class="time">0m</div><div class="prize">1,000</div></div>
-    </div>
+    <div class="rows" id="rows"></div>
   </div>
 
   <div class="foot">
-    <span>Live ranking</span>
-    <span>Updated: 2026-01-24</span>
+    <span id="status">Loading…</span>
+    <span id="updated">Updated: —</span>
   </div>
 
 </div>
 
-<!-- Nếu bạn đang dùng JS fetch, giữ nguyên JS cũ và chỉ thay phần HTML/CSS bên trên -->
+<script>
+/* ===== CONFIG – GIỮ SCRIPT CŨ ===== */
+const WEBAPP_URL =
+"https://script.google.com/macros/s/AKfycbyoYia8jIipN-Hq95blwQ8dkimXdy8uoNp_bvq1Ie1l7ZeQB0_QRMjBqsx7gwWg-kej8A/exec";
+const REFRESH_MS = 15000;
+
+const $rows = document.getElementById("rows");
+const $status = document.getElementById("status");
+const $updated = document.getElementById("updated");
+const $resetText = document.getElementById("resetText");
+
+const esc = s => String(s ?? "").replace(/[&<>"']/g, m =>
+  ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m])
+);
+
+function rowClass(rank){
+  if(rank===1) return "row top1";
+  if(rank===2) return "row top2";
+  if(rank===3) return "row top3";
+  return "row";
+}
+
+function render(data){
+  const list = data.top10 || [];
+  $rows.innerHTML = "";
+
+  list.forEach(x=>{
+    const rank = Number(x.rank||0);
+    const name = esc(x.username||"-");
+    const time = Number(x.season_points||0); // giữ logic cũ
+    const prize = Number(x.prize_mcoins||0).toLocaleString("en-US");
+
+    const div = document.createElement("div");
+    div.className = rowClass(rank);
+    div.innerHTML = `
+      <div class="rk">${rank}</div>
+      <div class="name" title="${name}">${name}</div>
+      <div class="time">${time}m</div>
+      <div class="prize">${prize}</div>
+    `;
+    $rows.appendChild(div);
+  });
+
+  if(data.reset_rule) $resetText.textContent = data.reset_rule;
+  $updated.textContent = "Updated: " + (data.updated_at || "—");
+  $status.textContent = "Live ranking";
+}
+
+async function load(){
+  try{
+    const res = await fetch(WEBAPP_URL, { cache:"no-store" });
+    const data = await res.json();
+    render(data);
+  }catch(e){
+    $status.textContent = "Load failed";
+  }
+}
+
+load();
+setInterval(load, REFRESH_MS);
+</script>
 </body>
 </html>
