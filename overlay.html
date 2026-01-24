@@ -6,8 +6,7 @@
   <title>Top Viewers Overlay</title>
   <style>
     :root{
-      /* ✅ GỌN HƠN */
-      --w: 360px;            /* giảm từ 420 */
+      --w: 360px;
       --radius: 16px;
 
       --text: rgba(240,246,255,.92);
@@ -45,7 +44,7 @@
 
     .frame{
       position:absolute;
-      inset: 8px;                 /* gọn */
+      inset: 8px;
       border-radius: 13px;
       border: 2px solid rgba(0,255,178,.20);
       box-shadow: 0 0 0 1px rgba(145,70,255,.12) inset;
@@ -54,7 +53,7 @@
 
     /* ===== HEADER ===== */
     .head{
-      padding: 10px 12px 8px 12px; /* gọn */
+      padding: 10px 12px 8px 12px;
       display:flex;
       align-items:flex-start;
       justify-content:space-between;
@@ -79,8 +78,7 @@
     }
 
     .twitch-badge{
-      width: 26px;
-      height: 26px;
+      width: 26px; height: 26px;
       border-radius: 9px;
       background: rgba(145,70,255,.18);
       border: 1px solid rgba(145,70,255,.38);
@@ -97,7 +95,7 @@
       font-weight: 1000;
       letter-spacing: .6px;
       text-transform: uppercase;
-      font-size: 13px;     /* gọn */
+      font-size: 13px;
       line-height: 1.12;
       white-space: normal;
     }
@@ -131,19 +129,17 @@
       color: rgba(0,255,178,.95);
     }
 
-    /* ✅ xóa Updated khỏi header: ẩn meta block */
-    .meta{ display:none; }
-
-    /* ===== TABLE ===== */
+    /* ===== TABLE (gọn + ưu tiên tên) ===== */
     .table{
       padding: 8px 10px 10px 10px;
       position: relative;
       z-index: 1;
     }
 
+    /* ✅ Time/Prize nhỏ lại để nhường chỗ tên */
     .hdr{
       display:grid;
-      grid-template-columns: 40px 1fr 54px 86px; /* gọn */
+      grid-template-columns: 34px 1fr 48px 82px;
       gap: 8px;
       padding: 7px 9px;
       border-radius: 12px;
@@ -162,12 +158,13 @@
       gap: 6px;
     }
 
+    /* ✅ giảm padding để overlay thấp hơn */
     .row{
       display:grid;
-      grid-template-columns: 40px 1fr 54px 86px;
+      grid-template-columns: 34px 1fr 48px 82px;
       gap: 8px;
       align-items:center;
-      padding: 8px 9px;           /* gọn */
+      padding: 7px 9px;
       border-radius: 12px;
       background: rgba(255,255,255,.06);
       border: 1px solid rgba(255,255,255,.08);
@@ -178,44 +175,45 @@
     .bar{
       position:absolute; left:0; top:0; bottom:0;
       width:0%;
-      background: linear-gradient(90deg, rgba(145,70,255,.18), rgba(0,255,178,.10));
+      background: linear-gradient(90deg, rgba(145,70,255,.16), rgba(0,255,178,.10));
       opacity:.9;
       pointer-events:none;
     }
 
+    /* ✅ THU NHỎ VIÊN BO SỐ */
     .rk{
-      width: 32px;
-      height: 28px;
-      border-radius: 11px;
+      width: 26px;
+      height: 22px;
+      border-radius: 9px;
       display:flex;
       align-items:center;
       justify-content:center;
       font-weight: 1000;
-      font-size: 11.5px;
+      font-size: 11px;
       background: rgba(0,0,0,.22);
       border: 1px solid rgba(255,255,255,.10);
-      box-shadow: 0 10px 18px rgba(0,0,0,.18);
+      box-shadow: 0 8px 14px rgba(0,0,0,.16);
       position: relative;
       z-index: 1;
     }
 
-    /* ✅ tên gọn hơn */
+    /* ✅ tăng size tên */
     .name{
-      font-weight: 900;
-      font-size: 12px;
+      font-weight: 950;
+      font-size: 13px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       position: relative;
       z-index: 1;
-      max-width: 190px; /* tránh chiếm diện tích */
+      max-width: 210px;
     }
 
     .time{
       text-align:right;
       font-weight: 900;
-      font-size: 11.5px;
-      color: rgba(240,246,255,.82);
+      font-size: 11px;
+      color: rgba(240,246,255,.78);
       font-variant-numeric: tabular-nums;
       position: relative;
       z-index: 1;
@@ -231,38 +229,83 @@
       z-index: 1;
     }
 
-    /* default prize (4-10): cùng 1 tone rõ */
-    .row:not(.top1):not(.top2):not(.top3) .prize{
-      color: rgba(255,210,74,.92);
-      text-shadow: 0 0 12px rgba(255,210,74,.10);
+    /* ===== TOP 1-2-3 SIÊU NỔI ===== */
+    .row.top1, .row.top2, .row.top3{
+      background: rgba(255,255,255,.075);
     }
 
-    .row.top1{ border-color: rgba(255,210,74,.22); }
+    .row.top1{
+      border-color: rgba(255,210,74,.30);
+      box-shadow: 0 0 0 1px rgba(255,210,74,.10) inset;
+    }
+    .row.top2{
+      border-color: rgba(207,214,228,.26);
+      box-shadow: 0 0 0 1px rgba(207,214,228,.09) inset;
+    }
+    .row.top3{
+      border-color: rgba(255,179,122,.26);
+      box-shadow: 0 0 0 1px rgba(255,179,122,.09) inset;
+    }
+
     .row.top1 .rk{
       color: rgba(0,0,0,.90);
       background: linear-gradient(180deg, #ffe27a, var(--gold));
-      border-color: rgba(255,210,74,.55);
-      box-shadow: 0 12px 26px rgba(255,210,74,.14);
+      border-color: rgba(255,210,74,.65);
+      box-shadow: 0 12px 24px rgba(255,210,74,.18);
     }
-    .row.top1 .prize{ color: var(--gold); text-shadow: 0 0 14px rgba(255,210,74,.18); }
-
-    .row.top2{ border-color: rgba(207,214,228,.20); }
     .row.top2 .rk{
       color: rgba(0,0,0,.86);
       background: linear-gradient(180deg, #eef2fb, var(--silver));
-      border-color: rgba(207,214,228,.55);
-      box-shadow: 0 12px 26px rgba(207,214,228,.12);
+      border-color: rgba(207,214,228,.65);
+      box-shadow: 0 12px 24px rgba(207,214,228,.14);
     }
-    .row.top2 .prize{ color: var(--silver); text-shadow: 0 0 14px rgba(207,214,228,.14); }
-
-    .row.top3{ border-color: rgba(255,179,122,.20); }
     .row.top3 .rk{
       color: rgba(0,0,0,.88);
       background: linear-gradient(180deg, #ffd7be, var(--bronze));
-      border-color: rgba(255,179,122,.55);
-      box-shadow: 0 12px 26px rgba(255,179,122,.12);
+      border-color: rgba(255,179,122,.65);
+      box-shadow: 0 12px 24px rgba(255,179,122,.14);
     }
-    .row.top3 .prize{ color: var(--bronze); text-shadow: 0 0 14px rgba(255,179,122,.14); }
+
+    /* ✅ name top 1-2-3 khác biệt rõ */
+    .row.top1 .name{
+      color: rgba(255,232,150,.98);
+      text-shadow: 0 0 14px rgba(255,210,74,.20);
+    }
+    .row.top2 .name{
+      color: rgba(233,240,255,.96);
+      text-shadow: 0 0 14px rgba(207,214,228,.16);
+    }
+    .row.top3 .name{
+      color: rgba(255,222,205,.96);
+      text-shadow: 0 0 14px rgba(255,179,122,.16);
+    }
+
+    /* ✅ prize top 1-2-3 nổi và khác nhau */
+    .row.top1 .prize{
+      color: var(--gold);
+      text-shadow: 0 0 16px rgba(255,210,74,.22);
+    }
+    .row.top2 .prize{
+      color: var(--silver);
+      text-shadow: 0 0 16px rgba(207,214,228,.18);
+    }
+    .row.top3 .prize{
+      color: var(--bronze);
+      text-shadow: 0 0 16px rgba(255,179,122,.18);
+    }
+
+    /* ===== 6-10 giống nhau ===== */
+    /* Mặc định 4-10: cùng 1 style */
+    .row:not(.top1):not(.top2):not(.top3) .prize{
+      color: rgba(255,210,74,.92);
+      text-shadow: 0 0 10px rgba(255,210,74,.10);
+    }
+    .row:not(.top1):not(.top2):not(.top3) .name{
+      color: rgba(240,246,255,.92);
+      text-shadow: none;
+    }
+
+    /* OPTIONAL: nếu bạn muốn 4-5 cũng “giống 6-10” thì OK, hiện đang giống luôn */
 
     /* ===== FOOTER ===== */
     .foot{
@@ -301,7 +344,6 @@
       max-width: 200px;
     }
 
-    /* ✅ footer bên phải giờ là UPDATED */
     .updatedFoot{
       white-space: nowrap;
       overflow: hidden;
@@ -332,13 +374,8 @@
 
         <div class="subline">
           <span class="pill live">Real time only</span>
-          <!-- ✅ chỉ còn reset ở đây, không lặp dưới -->
           <span class="pill" id="resetText">Reset: 23:59 • Day 14 (VN time)</span>
         </div>
-      </div>
-
-      <div class="meta">
-        Updated<br><b id="updated">—</b>
       </div>
     </div>
 
@@ -357,7 +394,6 @@
         <span id="dot" class="dot"></span>
         <span id="status">Loading…</span>
       </div>
-      <!-- ✅ thay reset bottom-right bằng updated -->
       <div class="updatedFoot" id="updatedFoot">Updated: —</div>
     </div>
   </div>
@@ -376,12 +412,12 @@
     const esc = (s)=> String(s ?? "").replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]));
     const fmt = (n)=> Number(n||0).toLocaleString("en-US");
 
-    // ✅ rút ngắn tên: giữ đầu + cuối để vẫn nhận ra
-    function shortName(raw, maxLen=14){
+    function shortName(raw, maxLen=16){
       const s = String(raw ?? "").trim();
       if(!s) return "-";
       if(s.length <= maxLen) return s;
-      const head = s.slice(0, 8);
+      // giữ đầu + cuối để vẫn nhận ra
+      const head = s.slice(0, 10);
       const tail = s.slice(-3);
       return head + "…" + tail;
     }
@@ -401,7 +437,7 @@
       list.forEach(x=>{
         const rank = Number(x.rank||0);
         const usernameRaw = x.username || "-";
-        const usernameShort = shortName(usernameRaw, 14);
+        const usernameShort = shortName(usernameRaw, 16);
 
         const nameSafe = esc(usernameShort);
         const nameFull = esc(usernameRaw);
