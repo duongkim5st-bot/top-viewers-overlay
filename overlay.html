@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body{margin:0;background:transparent;font-family:Arial;color:#fff}
+    .card{width:390px;border:2px solid #00ff9c;border-radius:14px;background:rgba(10,10,10,.78);overflow:hidden}
+    .hd{padding:10px 12px;border-bottom:1px solid rgba(0,255,156,.25);text-align:center}
+    .t1{font-weight:800;color:#00ff9c;font-size:16px}
+    .t2{opacity:.85;font-size:11px;margin-top:4px}
+    .tbl{padding:8px 10px 10px}
+    .row{display:grid;grid-template-columns:34px 1fr 70px 88px;gap:8px;align-items:center;padding:6px;border-radius:10px}
+    .head{opacity:.85;font-size:11px}
+    .item{font-size:12px;background:rgba(255,255,255,.04);margin-top:6px}
+    .r{text-align:center;font-weight:800}
+    .name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .time{text-align:right}
+    .pr{text-align:right;font-weight:800;color:#ffd700}
+    .top1{background:rgba(255,215,0,.10);border:1px solid rgba(255,215,0,.25)}
+    .top2{background:rgba(192,192,192,.10);border:1px solid rgba(192,192,192,.22)}
+    .top3{background:rgba(205,127,50,.12);border:1px solid rgba(205,127,50,.22)}
+    .ft{padding:0 12px 10px;text-align:center;font-size:10px;opacity:.75}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="hd">
+      <div class="t1">🏆 TOP VIEWERS – THIS MONTH</div>
+      <div class="t2">Reset: 23:59 • Day 14</div>
+    </div>
+
+    <div class="tbl">
+      <div class="row head">
+        <div class="r">#</div><div>Viewer</div><div class="time">Time</div><div class="pr">Prize</div>
+      </div>
+      <div id="rows"></div>
+    </div>
+    <div class="ft" id="updated">Loading…</div>
+  </div>
+
+<script>
+  const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyoYia8jIipN-Hq95blwQ8dkimXdy8uoNp_bvq1Ie1l7ZeQB0_QRMjBqsx7gwWg-kej8A/exec";  // <-- THAY DÒNG NÀY
+  const REFRESH_MS = 60000;
+
+  function fmtTime(mins){
+    mins = Number(mins||0);
+    const h = Math.floor(mins/60), m = mins%60;
+    return h>0 ? `${h}h ${m}m` : `${m}m`;
+  }
+  function fmtCoins(n){
+    return Number(n||0).toLocaleString("en-US") + " MCoins";
+  }
+  function esc(s){return String(s).replace(/[&<>"']/g,m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]))}
+
+  async function load(){
+    const el = document.getElementById('rows');
+    const up = document.getElementById('updated');
+    try{
+      const res = await fetch(WEBAPP_URL, {cache:"no-store"});
+      const data = await res.json();
+      el.innerHTML = "";
+      (data.top10||[]).forEach(x=>{
+        const cls = x.rank===1?'top1':x.rank===2?'top2':x.rank===3?'top3':'';
+        const div = document.createElement('div');
+        div.className = `row item ${cls}`;
+        div.innerHTML = `
+          <div class="r">${x.rank}</div>
+          <div class="name">${esc(x.username)}</div>
+          <div class="time">${fmtTime(x.minutes)}</div>
+          <div class="pr">${fmtCoins(x.prize_mcoins)}</div>
+        `;
+        el.appendChild(div);
+      });
+      up.textContent = "Updated: " + (data.updated_at || "");
+    }catch(e){
+      up.textContent = "Load failed: " + e.message;
+    }
+  }
+  load();
+  setInterval(load, REFRESH_MS);
+</script>
+</body>
+</html>
