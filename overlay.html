@@ -1,83 +1,220 @@
 <!doctype html>
-<html>
+<html lang="vi">
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Top Viewers Overlay</title>
   <style>
-    body{margin:0;background:transparent;font-family:Arial;color:#fff}
-    .card{width:390px;border:2px solid #00ff9c;border-radius:14px;background:rgba(10,10,10,.78);overflow:hidden}
-    .hd{padding:10px 12px;border-bottom:1px solid rgba(0,255,156,.25);text-align:center}
-    .t1{font-weight:800;color:#00ff9c;font-size:16px}
-    .t2{opacity:.85;font-size:11px;margin-top:4px}
-    .tbl{padding:8px 10px 10px}
-    .row{display:grid;grid-template-columns:34px 1fr 70px 88px;gap:8px;align-items:center;padding:6px;border-radius:10px}
-    .head{opacity:.85;font-size:11px}
-    .item{font-size:12px;background:rgba(255,255,255,.04);margin-top:6px}
-    .r{text-align:center;font-weight:800}
-    .name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .time{text-align:right}
-    .pr{text-align:right;font-weight:800;color:#ffd700}
-    .top1{background:rgba(255,215,0,.10);border:1px solid rgba(255,215,0,.25)}
-    .top2{background:rgba(192,192,192,.10);border:1px solid rgba(192,192,192,.22)}
-    .top3{background:rgba(205,127,50,.12);border:1px solid rgba(205,127,50,.22)}
-    .ft{padding:0 12px 10px;text-align:center;font-size:10px;opacity:.75}
+    :root{
+      --bg: rgba(10,10,10,.78);
+      --bd: rgba(0,255,156,.35);
+      --bd2: rgba(0,255,156,.18);
+      --kick: #00ff9c;
+      --txt: #ffffff;
+      --muted: rgba(255,255,255,.75);
+      --gold: rgba(255,215,0,.22);
+      --silver: rgba(192,192,192,.20);
+      --bronze: rgba(205,127,50,.22);
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      background:transparent;
+      font-family: Arial, Helvetica, sans-serif;
+      color:var(--txt);
+    }
+
+    .card{
+      width: 390px;
+      border:2px solid var(--bd);
+      border-radius:14px;
+      background:var(--bg);
+      overflow:hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+
+    .hd{
+      padding:10px 12px;
+      border-bottom:1px solid var(--bd2);
+      text-align:center;
+    }
+    .t1{
+      font-weight:800;
+      color:var(--kick);
+      font-size:16px;
+      letter-spacing:.4px;
+    }
+    .t2{
+      opacity:.85;
+      font-size:11px;
+      margin-top:4px;
+    }
+
+    .tbl{ padding:8px 10px 10px; }
+    .row{
+      display:grid;
+      grid-template-columns: 34px 1fr 70px 92px;
+      gap:8px;
+      align-items:center;
+      padding:6px;
+      border-radius:10px;
+    }
+    .head{
+      opacity:.85;
+      font-size:11px;
+      color:var(--muted);
+    }
+    .item{
+      font-size:12px;
+      background:rgba(255,255,255,.04);
+      margin-top:6px;
+      border:1px solid rgba(255,255,255,.06);
+    }
+
+    .r{ text-align:center; font-weight:800; }
+    .name{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .time{ text-align:right; color: rgba(255,255,255,.92); }
+    .pr{ text-align:right; font-weight:800; color:#ffd700; }
+
+    .top1{ background: rgba(255,215,0,.10); border:1px solid var(--gold); }
+    .top2{ background: rgba(192,192,192,.10); border:1px solid var(--silver); }
+    .top3{ background: rgba(205,127,50,.10); border:1px solid var(--bronze); }
+
+    .ft{
+      padding:0 12px 10px;
+      text-align:center;
+      font-size:10px;
+      opacity:.75;
+      min-height: 18px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .badge{
+      display:inline-block;
+      padding:2px 8px;
+      border-radius:999px;
+      border:1px solid rgba(0,255,156,.25);
+      background: rgba(0,255,156,.07);
+      color: rgba(255,255,255,.9);
+      font-size:10px;
+      margin-left:6px;
+      vertical-align:middle;
+    }
   </style>
 </head>
+
 <body>
   <div class="card">
     <div class="hd">
-      <div class="t1">🏆 TOP VIEWERS – THIS MONTH</div>
-      <div class="t2">Reset: 23:59 • Day 14</div>
+      <div class="t1">🏆 TOP VIEWERS – THIS MONTH <span class="badge">Real time only</span></div>
+      <div class="t2">Reset: 23:59 • Day 14 (VN)</div>
     </div>
 
     <div class="tbl">
       <div class="row head">
-        <div class="r">#</div><div>Viewer</div><div class="time">Time</div><div class="pr">Prize</div>
+        <div class="r">#</div>
+        <div>Viewer</div>
+        <div class="time">Time</div>
+        <div class="pr">Prize</div>
       </div>
       <div id="rows"></div>
     </div>
+
     <div class="ft" id="updated">Loading…</div>
   </div>
 
-<script>
-  const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyoYia8jIipN-Hq95blwQ8dkimXdy8uoNp_bvq1Ie1l7ZeQB0_QRMjBqsx7gwWg-kej8A/exec";  // <-- THAY DÒNG NÀY
-  const REFRESH_MS = 60000;
+  <script>
+    // ✅ DÁN ĐÚNG WEB APP CỦA BẠN Ở ĐÂY
+    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyoYia8jIipN-Hq95blwQ8dkimXdy8uoNp_bvq1Ie1l7ZeQB0_QRMjBqsx7gwWg-kej8A/exec";
 
-  function fmtTime(mins){
-    mins = Number(mins||0);
-    const h = Math.floor(mins/60), m = mins%60;
-    return h>0 ? `${h}h ${m}m` : `${m}m`;
-  }
-  function fmtCoins(n){
-    return Number(n||0).toLocaleString("en-US") + " MCoins";
-  }
-  function esc(s){return String(s).replace(/[&<>"']/g,m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]))}
+    // refresh mỗi 15s (đủ mượt, không spam)
+    const REFRESH_MS = 15000;
 
-  async function load(){
-    const el = document.getElementById('rows');
-    const up = document.getElementById('updated');
-    try{
-      const res = await fetch(WEBAPP_URL, {cache:"no-store"});
-      const data = await res.json();
-      el.innerHTML = "";
-      (data.top10||[]).forEach(x=>{
-        const cls = x.rank===1?'top1':x.rank===2?'top2':x.rank===3?'top3':'';
-        const div = document.createElement('div');
-        div.className = `row item ${cls}`;
-        div.innerHTML = `
-          <div class="r">${x.rank}</div>
-          <div class="name">${esc(x.username)}</div>
-          <div class="time">${fmtTime(x.minutes)}</div>
-          <div class="pr">${fmtCoins(x.prize_mcoins)}</div>
-        `;
-        el.appendChild(div);
-      });
-      up.textContent = "Updated: " + (data.updated_at || "");
-    }catch(e){
-      up.textContent = "Load failed: " + e.message;
+    function fmtTime(mins){
+      mins = Math.max(0, Math.floor(Number(mins || 0)));
+      const h = Math.floor(mins / 60);
+      const m = mins % 60;
+      return h > 0 ? `${h}h ${m}m` : `${m}m`;
     }
-  }
-  load();
-  setInterval(load, REFRESH_MS);
-</script>
+    function fmtCoins(n){
+      return Number(n || 0).toLocaleString("en-US") + " MCoins";
+    }
+    function esc(s){
+      return String(s || "").replace(/[&<>"']/g, m => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+      }[m]));
+    }
+
+    // ✅ NORMALIZE: KHÔNG BAO GIỜ ĐẢO CỘT
+    // - Nếu top10 là object: {rank, username, minutes, prize_mcoins}
+    // - Nếu top10 là array: [rank, username, points, minutes, prize, updated_at]
+    function normalizeRow(x){
+      if (x && typeof x === "object" && !Array.isArray(x)) {
+        return {
+          rank: Number(x.rank || 0),
+          username: String(x.username || "-"),
+          minutes: Number(x.minutes || 0),
+          prize_mcoins: Number(x.prize_mcoins || 0)
+        };
+      }
+      if (Array.isArray(x)) {
+        return {
+          rank: Number(x[0] || 0),
+          username: String(x[1] || "-"),
+          minutes: Number(x[3] || 0),
+          prize_mcoins: Number(x[4] || 0)
+        };
+      }
+      return { rank: 0, username: "-", minutes: 0, prize_mcoins: 0 };
+    }
+
+    // lọc username “rác” (tránh insertBefore/window/script...)
+    function isValidUser(u){
+      const s = String(u || "").trim();
+      if (s === "-" || !s) return false;
+      return /^[A-Za-z0-9_]{3,25}$/.test(s);
+    }
+
+    async function load(){
+      const el = document.getElementById("rows");
+      const up = document.getElementById("updated");
+
+      try{
+        const res = await fetch(WEBAPP_URL, { cache: "no-store" });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+
+        const data = await res.json();
+        const list = Array.isArray(data.top10) ? data.top10 : [];
+
+        el.innerHTML = "";
+
+        const normalized = list.map(normalizeRow)
+          .filter(x => x.rank >= 1 && x.rank <= 10)
+          .filter(x => isValidUser(x.username) || x.username === "-");
+
+        normalized.forEach(x => {
+          const cls = x.rank === 1 ? "top1" : x.rank === 2 ? "top2" : x.rank === 3 ? "top3" : "";
+          const div = document.createElement("div");
+          div.className = `row item ${cls}`;
+          div.innerHTML = `
+            <div class="r">${x.rank}</div>
+            <div class="name">${esc(x.username)}</div>
+            <div class="time">${fmtTime(x.minutes)}</div>
+            <div class="pr">${fmtCoins(x.prize_mcoins)}</div>
+          `;
+          el.appendChild(div);
+        });
+
+        up.textContent = "Updated: " + (data.updated_at || "");
+      }catch(e){
+        up.textContent = "Load failed: " + (e && e.message ? e.message : e);
+      }
+    }
+
+    load();
+    setInterval(load, REFRESH_MS);
+  </script>
 </body>
 </html>
