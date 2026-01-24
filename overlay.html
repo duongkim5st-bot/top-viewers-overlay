@@ -6,151 +6,137 @@
   <title>Top Viewers Overlay</title>
   <style>
     :root{
-      /* size */
-      --w: 440px;
-      --radius: 22px;
-      --rowH: 44px;
+      --w: 420px;
+      --radius: 18px;
 
-      /* colors */
-      --bg0: rgba(10,12,18,.44);
-      --bg1: rgba(18,22,32,.58);
+      --bg: rgba(10,12,16,.52);
       --panel: rgba(255,255,255,.06);
-      --panel2: rgba(255,255,255,.08);
-      --stroke: rgba(255,255,255,.10);
+      --stroke: rgba(255,255,255,.12);
 
-      --text: rgba(245,248,255,.94);
-      --muted: rgba(245,248,255,.62);
+      --text: rgba(240,246,255,.92);
+      --muted: rgba(240,246,255,.62);
 
       --twitch: #9146FF;
-      --mint: #00ffb2;
+      --green: #00ffb2;
 
       --gold: #ffd24a;
       --silver: #cfd6e4;
       --bronze: #ffb37a;
 
-      /* effects */
-      --shadow: 0 22px 70px rgba(0,0,0,.45);
-      --shadow2: 0 10px 24px rgba(0,0,0,.30);
-      --blur: 14px;
+      --shadow: 0 18px 55px rgba(0,0,0,.55);
     }
 
     *{ box-sizing:border-box; }
     body{
       margin:0;
       background: transparent;
-      color: var(--text);
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
     }
 
-    /* ===== Card ===== */
     .card{
       width: var(--w);
       border-radius: var(--radius);
-      position: relative;
       overflow: hidden;
-      background:
-        radial-gradient(900px 240px at 8% 0%, rgba(145,70,255,.28), transparent 55%),
-        radial-gradient(720px 240px at 92% 12%, rgba(0,255,178,.18), transparent 60%),
-        linear-gradient(180deg, var(--bg1), var(--bg0));
+      position: relative;
+      background: linear-gradient(180deg, rgba(20,24,32,.64), rgba(8,10,14,.52));
       border: 1px solid var(--stroke);
       box-shadow: var(--shadow);
-      backdrop-filter: blur(var(--blur));
+      backdrop-filter: blur(10px);
     }
 
-    /* top neon line */
-    .card::before{
-      content:"";
-      position:absolute; left:0; top:0; right:0;
-      height: 2px;
-      background: linear-gradient(90deg, rgba(145,70,255,.0), rgba(145,70,255,.9), rgba(0,255,178,.85), rgba(0,255,178,.0));
-      opacity:.9;
+    /* simple neon frame like mẫu */
+    .frame{
+      position:absolute;
+      inset: 10px;
+      border-radius: 14px;
+      border: 2px solid rgba(0,255,178,.20);
+      box-shadow: 0 0 0 1px rgba(145,70,255,.12) inset;
       pointer-events:none;
     }
 
-    /* subtle grain */
-    .card::after{
-      content:"";
-      position:absolute; inset:0;
-      background-image: radial-gradient(rgba(255,255,255,.06) 1px, transparent 1px);
-      background-size: 18px 18px;
-      opacity:.12;
-      pointer-events:none;
-      mix-blend-mode: overlay;
-    }
-
-    /* ===== Header ===== */
     .head{
+      padding: 12px 14px 10px 14px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 10px;
       position: relative;
       z-index: 1;
-      padding: 14px 14px 10px 14px;
-      display:flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: flex-start;
     }
 
-    .brand{
-      display:flex;
-      gap: 10px;
-      align-items: center;
+    .left{
       min-width: 0;
-    }
-
-    .logo{
-      width: 34px; height: 34px;
-      border-radius: 12px;
-      background: rgba(145,70,255,.16);
-      border: 1px solid rgba(145,70,255,.35);
-      box-shadow: 0 0 22px rgba(145,70,255,.18);
-      display:flex; align-items:center; justify-content:center;
-      flex: 0 0 auto;
-    }
-    .logo svg{ width: 18px; height: 18px; display:block; }
-
-    .titles{
       display:flex;
       flex-direction: column;
-      gap: 4px;
-      min-width: 0;
+      gap: 6px;
     }
-    .h1{
-      font-weight: 1000;
-      letter-spacing: .6px;
-      text-transform: uppercase;
-      font-size: 15px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+
+    .titleline{
       display:flex;
       align-items:center;
       gap: 10px;
+      min-width: 0;
     }
-    .chip{
-      font-size: 11px;
-      font-weight: 950;
-      letter-spacing: .3px;
-      padding: 4px 9px;
-      border-radius: 999px;
-      color: rgba(0,0,0,.88);
-      background: linear-gradient(90deg, var(--mint), #7dffda);
-      box-shadow: 0 10px 26px rgba(0,255,178,.12);
+
+    .twitch-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width: 28px;
+      height: 28px;
+      border-radius: 10px;
+      background: rgba(145,70,255,.18);
+      border: 1px solid rgba(145,70,255,.38);
+      box-shadow: 0 0 18px rgba(145,70,255,.18);
       flex: 0 0 auto;
     }
-    .sub{
-      font-size: 11px;
-      color: var(--muted);
-      line-height: 1.25;
+    .twitch-badge svg{ width: 16px; height: 16px; display:block; }
+
+    .title{
+      font-weight: 1000;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+      font-size: 14px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 330px;
+    }
+    .title b{
+      color: var(--green);
+      text-shadow: 0 0 14px rgba(0,255,178,.18);
+    }
+
+    .subline{
+      display:flex;
+      gap: 8px;
+      align-items:center;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.2;
+    }
+
+    .pill{
+      font-size: 10.5px;
+      font-weight: 950;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.10);
+      color: rgba(240,246,255,.82);
+    }
+    .pill.live{
+      background: rgba(0,255,178,.10);
+      border-color: rgba(0,255,178,.22);
+      color: rgba(0,255,178,.95);
     }
 
     .meta{
       text-align:right;
-      font-size: 11px;
       color: var(--muted);
-      min-width: 128px;
+      font-size: 11px;
+      min-width: 120px;
       padding-top: 2px;
     }
     .meta b{
@@ -159,83 +145,69 @@
       font-variant-numeric: tabular-nums;
     }
 
-    /* ===== Table ===== */
     .table{
+      padding: 8px 12px 10px 12px;
       position: relative;
       z-index: 1;
-      padding: 10px 12px 12px 12px;
     }
 
     .hdr{
       display:grid;
-      grid-template-columns: 44px 1fr 86px 106px;
+      grid-template-columns: 44px 1fr 70px 96px;
       gap: 10px;
-      padding: 10px 10px;
-      border-radius: 14px;
-      background: rgba(0,0,0,.18);
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(0,0,0,.22);
       border: 1px solid rgba(255,255,255,.08);
-      color: rgba(245,248,255,.72);
+      color: rgba(240,246,255,.70);
       font-size: 11px;
-      letter-spacing: .32px;
-      text-transform: uppercase;
+      font-weight: 850;
+      letter-spacing: .25px;
     }
 
     .rows{
-      margin-top: 10px;
+      margin-top: 8px;
       display:flex;
-      flex-direction: column;
-      gap: 8px;
+      flex-direction:column;
+      gap: 7px;
     }
 
     .row{
-      height: var(--rowH);
       display:grid;
-      grid-template-columns: 44px 1fr 86px 106px;
+      grid-template-columns: 44px 1fr 70px 96px;
       gap: 10px;
-      align-items: center;
-      padding: 0 10px;
-      border-radius: 14px;
-      background: rgba(255,255,255,.05);
+      align-items:center;
+      padding: 10px 10px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.06);
       border: 1px solid rgba(255,255,255,.08);
-      box-shadow: var(--shadow2);
       position: relative;
       overflow: hidden;
     }
 
-    /* progress */
+    /* thin bar behind */
     .bar{
       position:absolute;
       left:0; top:0; bottom:0;
       width:0%;
-      background:
-        linear-gradient(90deg, rgba(145,70,255,.20), rgba(0,255,178,.10));
-      opacity:.95;
+      background: linear-gradient(90deg, rgba(145,70,255,.18), rgba(0,255,178,.10));
+      opacity:.9;
       pointer-events:none;
     }
 
-    /* inner shine */
-    .row::after{
-      content:"";
-      position:absolute; inset:0;
-      background: linear-gradient(180deg, rgba(255,255,255,.10), transparent 55%);
-      opacity:.35;
-      pointer-events:none;
-    }
-
-    /* rank badge */
+    /* rank */
     .rk{
       width: 34px;
-      height: 28px;
-      border-radius: 12px;
+      height: 30px;
+      border-radius: 11px;
       display:flex;
       align-items:center;
       justify-content:center;
       font-weight: 1000;
       font-size: 12px;
-      color: rgba(245,248,255,.96);
-      background: rgba(0,0,0,.20);
+      background: rgba(0,0,0,.22);
       border: 1px solid rgba(255,255,255,.10);
-      box-shadow: 0 10px 18px rgba(0,0,0,.20);
+      box-shadow: 0 10px 20px rgba(0,0,0,.18);
       position: relative;
       z-index: 1;
     }
@@ -246,22 +218,21 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      padding-right: 6px;
       position: relative;
       z-index: 1;
     }
 
-    .pts{
+    .time{
       text-align:right;
-      font-weight: 950;
+      font-weight: 900;
       font-size: 12px;
-      color: rgba(245,248,255,.88);
+      color: rgba(240,246,255,.82);
       font-variant-numeric: tabular-nums;
       position: relative;
       z-index: 1;
     }
 
-    .prz{
+    .prize{
       text-align:right;
       font-weight: 1000;
       font-size: 12px;
@@ -269,96 +240,100 @@
       font-variant-numeric: tabular-nums;
       position: relative;
       z-index: 1;
+      color: var(--gold);
+      text-shadow: 0 0 14px rgba(255,210,74,.18);
     }
 
-    /* Top 1/2/3 highlights */
-    .row.top1{ border-color: rgba(255,210,74,.24); }
+    /* TOP 1/2/3 emphasis */
+    .row.top1{ border-color: rgba(255,210,74,.22); }
     .row.top1 .rk{
       color: rgba(0,0,0,.90);
       background: linear-gradient(180deg, #ffe27a, var(--gold));
       border-color: rgba(255,210,74,.55);
+      box-shadow: 0 12px 28px rgba(255,210,74,.16);
     }
-    .row.top1 .prz{ color: var(--gold); text-shadow: 0 0 14px rgba(255,210,74,.18); }
 
-    .row.top2{ border-color: rgba(207,214,228,.22); }
+    .row.top2{ border-color: rgba(207,214,228,.20); }
     .row.top2 .rk{
       color: rgba(0,0,0,.86);
       background: linear-gradient(180deg, #eef2fb, var(--silver));
       border-color: rgba(207,214,228,.55);
+      box-shadow: 0 12px 28px rgba(207,214,228,.12);
     }
-    .row.top2 .prz{ color: var(--silver); text-shadow: 0 0 14px rgba(207,214,228,.14); }
+    .row.top2 .prize{ color: var(--silver); text-shadow: 0 0 14px rgba(207,214,228,.14); }
 
-    .row.top3{ border-color: rgba(255,179,122,.22); }
+    .row.top3{ border-color: rgba(255,179,122,.20); }
     .row.top3 .rk{
       color: rgba(0,0,0,.88);
       background: linear-gradient(180deg, #ffd7be, var(--bronze));
       border-color: rgba(255,179,122,.55);
+      box-shadow: 0 12px 28px rgba(255,179,122,.12);
     }
-    .row.top3 .prz{ color: var(--bronze); text-shadow: 0 0 14px rgba(255,179,122,.14); }
+    .row.top3 .prize{ color: var(--bronze); text-shadow: 0 0 14px rgba(255,179,122,.14); }
 
-    /* ===== Footer ===== */
     .foot{
-      position: relative;
-      z-index: 1;
       padding: 10px 14px 12px 14px;
       border-top: 1px solid rgba(255,255,255,.08);
       display:flex;
-      justify-content: space-between;
-      align-items: center;
+      justify-content:space-between;
+      align-items:center;
       gap: 10px;
-      color: rgba(245,248,255,.62);
+      color: rgba(240,246,255,.62);
       font-size: 11px;
+      position: relative;
+      z-index: 1;
     }
-
-    .badge{
+    .status{
       display:flex;
       align-items:center;
-      gap:8px;
+      gap: 8px;
       min-width: 0;
     }
     .dot{
-      width: 9px; height: 9px;
-      border-radius: 99px;
-      background: var(--mint);
-      box-shadow: 0 0 12px rgba(0,255,178,.65);
+      width:8px; height:8px; border-radius:99px;
+      background: var(--green);
+      box-shadow: 0 0 10px rgba(0,255,178,.65);
       flex: 0 0 auto;
     }
     .dot.err{
       background: #ff4d4d;
-      box-shadow: 0 0 12px rgba(255,77,77,.55);
+      box-shadow: 0 0 10px rgba(255,77,77,.55);
     }
-    .status{
+    .status span{
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 260px;
+      max-width: 240px;
     }
     .rule{
-      text-align:right;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       max-width: 160px;
-      color: rgba(245,248,255,.55);
+      text-align:right;
     }
   </style>
 </head>
 
 <body>
   <div class="card">
+    <div class="frame"></div>
+
     <div class="head">
-      <div class="brand">
-        <div class="logo" title="Twitch Leaderboard">
-          <!-- Twitch icon -->
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path fill="#9146FF" d="M4 3h18v12l-5 5h-4l-2 2H8v-2H4V3z"/>
-            <path fill="#fff" d="M6 5v12h4v2l2-2h5l3-3V5H6zm5 8H9V8h2v5zm5 0h-2V8h2v5z"/>
-          </svg>
+      <div class="left">
+        <div class="titleline">
+          <div class="twitch-badge" title="Twitch">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#9146FF" d="M4 3h18v12l-5 5h-4l-2 2H8v-2H4V3z"/>
+              <path fill="#fff" d="M6 5v12h4v2l2-2h5l3-3V5H6zm5 8H9V8h2v5zm5 0h-2V8h2v5z"/>
+            </svg>
+          </div>
+          <div class="title">🏆 <b>TOP VIEWERS</b> – THIS MONTH</div>
         </div>
 
-        <div class="titles">
-          <div class="h1">🏆 Top Viewers <span class="chip">This Month</span></div>
-          <div class="sub">Reset: 23:59 • Day 14 (VN time) • Prize: 10,000 → 1,000 MCoins</div>
+        <div class="subline">
+          <span class="pill live">Real time only</span>
+          <span class="pill" id="resetText">Reset: 23:59 • Day 14 (VN)</span>
         </div>
       </div>
 
@@ -371,16 +346,16 @@
       <div class="hdr">
         <div>#</div>
         <div>Viewer</div>
-        <div style="text-align:right;">Points</div>
+        <div style="text-align:right;">Time</div>
         <div style="text-align:right;">Prize</div>
       </div>
       <div class="rows" id="rows"></div>
     </div>
 
     <div class="foot">
-      <div class="badge">
+      <div class="status">
         <span id="dot" class="dot"></span>
-        <span class="status" id="status">Loading…</span>
+        <span id="status">Loading…</span>
       </div>
       <div class="rule" id="rule">—</div>
     </div>
@@ -396,6 +371,7 @@
     const $status = document.getElementById("status");
     const $rule = document.getElementById("rule");
     const $dot = document.getElementById("dot");
+    const $resetText = document.getElementById("resetText");
 
     const esc = (s)=> String(s ?? "").replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]));
     const fmt = (n)=> Number(n||0).toLocaleString("en-US");
@@ -409,14 +385,21 @@
 
     function render(data){
       const list = Array.isArray(data.top10) ? data.top10 : [];
+
+      // dùng points để tạo bar (động lực cạnh tranh)
       const maxPts = Math.max(1, ...list.map(x=> Number(x.season_points||0)));
 
       $rows.innerHTML = "";
       list.forEach(x=>{
         const rank = Number(x.rank||0);
         const name = esc(x.username || "-");
-        const pts = Number(x.season_points||0);
-        const prize = Number(x.prize_mcoins||0);
+        const pts  = Number(x.season_points||0);
+        const prize= Number(x.prize_mcoins||0);
+
+        // TIME: mặc định coi points = minutes để ra "0m" như mẫu
+        // Nếu JSON của bạn có field phút riêng, thay dòng dưới bằng:
+        // const timeVal = Number(x.watch_minutes || x.minutes || 0);
+        const timeVal = pts;
 
         const div = document.createElement("div");
         div.className = rowClass(rank);
@@ -429,8 +412,8 @@
         div.insertAdjacentHTML("beforeend", `
           <div class="rk">${rank||"-"}</div>
           <div class="name" title="${name}">${name}</div>
-          <div class="pts">${fmt(pts)}</div>
-          <div class="prz">${fmt(prize)} MCoins</div>
+          <div class="time">${fmt(timeVal)}m</div>
+          <div class="prize">${fmt(prize)} MCoins</div>
         `);
 
         $rows.appendChild(div);
@@ -438,7 +421,11 @@
 
       $updated.textContent = data.updated_at || "—";
       $rule.textContent = data.reset_rule || "";
-      $status.textContent = "Live ranking • Monthly delta";
+      // nếu bạn muốn header reset tự lấy từ API:
+      // data.reset_rule có thể đang là "Reset at 23:59 Day 14 (VN time)"
+      if (data.reset_rule) $resetText.textContent = data.reset_rule;
+
+      $status.textContent = "Live ranking • Monthly leaderboard";
       $dot.classList.remove("err");
     }
 
