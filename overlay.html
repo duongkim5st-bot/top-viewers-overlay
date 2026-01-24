@@ -11,77 +11,68 @@
 :root{
   --w: 360px;
 
-  --bg: #6f7276;
-  --bg-row: #7c7f83;
-  --bg-header: #64676b;
+  --gold: #ffd24a;
+  --silver: #e2e6ef;
+  --bronze: #ffb37a;
 
   --text: #f2f4f7;
-  --muted: #d0d3d8;
-
-  --green: #19ffb4;
+  --muted: #cfd2d8;
 }
 
 *{ box-sizing:border-box; }
 body{
   margin:0;
   background: transparent;
-  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-family: "Inter", system-ui, sans-serif;
   color: var(--text);
 }
 
+/* ===== CARD (VIỀN GOLD) ===== */
 .card{
   width: var(--w);
-  background: var(--bg);
+  background: rgba(0,0,0,.28);
   border-radius: 16px;
+  border: 2px solid var(--gold);
   overflow: hidden;
 }
 
 /* ===== HEADER ===== */
 .head{
-  padding: 10px 12px 8px;
-  background: var(--bg-header);
+  padding: 10px 12px;
   position: relative;
 }
 
-/* Twitch logo góc phải */
 .twitchCorner{
   position:absolute;
   right: 10px;
   top: 10px;
-  width: 30px;
-  height: 30px;
-  border-radius: 10px;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(145,70,255,.25);
   display:flex;
   align-items:center;
   justify-content:center;
-  background: rgba(145,70,255,.25);
 }
-.twitchCorner svg{ width: 18px; height: 18px; }
+.twitchCorner svg{ width:16px; height:16px; }
 
 .title{
   font-size: 14px;
   font-weight: 900;
-  letter-spacing: .5px;
-  padding-right: 44px;
 }
-.title b{ color: var(--green); }
+.title b{ color: var(--gold); }
 
 .badges{
   margin-top: 6px;
   display:flex;
   gap:6px;
-  flex-wrap:wrap;
 }
 .badge{
   font-size: 10px;
   font-weight: 800;
   padding: 4px 8px;
   border-radius: 999px;
-  background: #555;
-}
-.badge.live{
-  background: rgba(25,255,180,.2);
-  color: var(--green);
+  background: rgba(255,255,255,.08);
 }
 
 /* ===== TABLE ===== */
@@ -91,11 +82,10 @@ body{
 
 .hdr{
   display:grid;
-  grid-template-columns: 30px 1fr 46px 86px;
+  grid-template-columns: 34px 1fr 46px 86px;
   font-size: 11px;
   font-weight: 800;
   color: var(--muted);
-  margin-bottom: 6px;
 }
 .prizeHdr{ text-align:center; }
 
@@ -105,31 +95,57 @@ body{
   gap: 6px;
 }
 
+/* ===== ROW (NỀN TRONG SUỐT) ===== */
 .row{
   display:grid;
-  grid-template-columns: 30px 1fr 46px 86px;
+  grid-template-columns: 34px 1fr 46px 86px;
   align-items:center;
   padding: 8px;
-  background: var(--bg-row);
+  background: rgba(255,255,255,.06);
   border-radius: 10px;
 }
 
+/* ===== RANK ===== */
 .rk{
   text-align:center;
   font-weight: 900;
-  font-size: 12px;
+  font-size: 13px;
 }
 
-/* ===== GRADIENT CHỮ ===== */
-@keyframes colorShift{
+/* ICON HUY HIỆU */
+.medal{
+  font-size: 16px;
+}
+.gold{ color: var(--gold); }
+.silver{ color: var(--silver); }
+.bronze{ color: var(--bronze); }
+
+/* ===== NAME (GIỮ MÀU TRẮNG) ===== */
+.name{
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ===== TIME ===== */
+.time{
+  font-size: 11px;
+  text-align:right;
+  color: var(--muted);
+}
+
+/* ===== PRIZE (CHỈ PRIZE ĐỔI MÀU) ===== */
+@keyframes prizeShift{
   0%{ background-position: 0% 50%; }
-  50%{ background-position: 100% 50%; }
-  100%{ background-position: 0% 50%; }
+  100%{ background-position: 100% 50%; }
 }
 
-.name,
 .prize{
+  font-size: 12px;
   font-weight: 900;
+  text-align:center;
   background: linear-gradient(
     90deg,
     #ffd24a,
@@ -141,45 +157,13 @@ body{
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: colorShift 6s linear infinite;
+  animation: prizeShift 6s linear infinite;
 }
 
-.name{
-  font-size: 13px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.time{
-  font-size: 11px;
-  font-weight: 700;
-  text-align:right;
-  color: var(--muted);
-}
-
-.prize{
-  font-size: 12px;
-  text-align:center;
-}
-
-/* TOP 1 nổi bật nhất */
-.row.top1 .name,
-.row.top1 .prize{
-  animation-duration: 2.5s;
-  filter: drop-shadow(0 0 8px rgba(255,210,74,.35));
-}
-
-/* TOP 2–3 vừa */
-.row.top2 .name,
-.row.top2 .prize,
-.row.top3 .name,
-.row.top3 .prize{
-  animation-duration: 4s;
-}
-
-/* 4–10 chậm hơn */
-.row:not(.top1):not(.top2):not(.top3) .name,
+/* TOP 1 prize nhanh hơn */
+.row.top1 .prize{ animation-duration: 2.5s; }
+.row.top2 .prize{ animation-duration: 4s; }
+.row.top3 .prize{ animation-duration: 4s; }
 .row:not(.top1):not(.top2):not(.top3) .prize{
   animation-duration: 7s;
 }
@@ -208,7 +192,7 @@ body{
 
     <div class="title">🏆 <b>TOP VIEWERS</b> – THIS MONTH</div>
     <div class="badges">
-      <span class="badge live">Real time only</span>
+      <span class="badge">Real time only</span>
       <span class="badge" id="resetText">Reset …</span>
     </div>
   </div>
@@ -224,26 +208,32 @@ body{
   </div>
 
   <div class="foot">
-    <span id="status">Loading…</span>
+    <span>Live ranking</span>
     <span id="updated">Updated: —</span>
   </div>
 
 </div>
 
 <script>
-/* ===== CONFIG – GIỮ SCRIPT CŨ ===== */
+/* ===== GIỮ NGUYÊN SCRIPT CŨ ===== */
 const WEBAPP_URL =
 "https://script.google.com/macros/s/AKfycbyoYia8jIipN-Hq95blwQ8dkimXdy8uoNp_bvq1Ie1l7ZeQB0_QRMjBqsx7gwWg-kej8A/exec";
 const REFRESH_MS = 15000;
 
 const $rows = document.getElementById("rows");
-const $status = document.getElementById("status");
 const $updated = document.getElementById("updated");
 const $resetText = document.getElementById("resetText");
 
 const esc = s => String(s ?? "").replace(/[&<>"']/g, m =>
   ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m])
 );
+
+function rankCell(rank){
+  if(rank===1) return `<div class="rk medal gold">🥇</div>`;
+  if(rank===2) return `<div class="rk medal silver">🥈</div>`;
+  if(rank===3) return `<div class="rk medal bronze">🥉</div>`;
+  return `<div class="rk">${rank}</div>`;
+}
 
 function rowClass(rank){
   if(rank===1) return "row top1";
@@ -259,14 +249,14 @@ function render(data){
   list.forEach(x=>{
     const rank = Number(x.rank||0);
     const name = esc(x.username||"-");
-    const time = Number(x.season_points||0); // giữ logic cũ
+    const time = Number(x.season_points||0);
     const prize = Number(x.prize_mcoins||0).toLocaleString("en-US");
 
     const div = document.createElement("div");
     div.className = rowClass(rank);
     div.innerHTML = `
-      <div class="rk">${rank}</div>
-      <div class="name" title="${name}">${name}</div>
+      ${rankCell(rank)}
+      <div class="name">${name}</div>
       <div class="time">${time}m</div>
       <div class="prize">${prize}</div>
     `;
@@ -275,7 +265,6 @@ function render(data){
 
   if(data.reset_rule) $resetText.textContent = data.reset_rule;
   $updated.textContent = "Updated: " + (data.updated_at || "—");
-  $status.textContent = "Live ranking";
 }
 
 async function load(){
@@ -283,9 +272,7 @@ async function load(){
     const res = await fetch(WEBAPP_URL, { cache:"no-store" });
     const data = await res.json();
     render(data);
-  }catch(e){
-    $status.textContent = "Load failed";
-  }
+  }catch(e){}
 }
 
 load();
