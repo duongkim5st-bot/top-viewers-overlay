@@ -105,20 +105,19 @@ body{
   border-radius: 10px;
 }
 
-/* ✅ CANH GIỮA TẤT CẢ CỘT (# / User / Points / Prize) */
+/* ✅ CANH GIỮA TẤT CẢ CỘT */
 .hdr > div,
 .row > div{
   text-align:center;
 }
 
-/* User vẫn ellipsis + canh giữa chuẩn */
+/* User canh giữa + ellipsis */
 .name{
   font-size: 13px;
   font-weight: 800;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-
   display:flex;
   justify-content:center;
   align-items:center;
@@ -210,7 +209,8 @@ body{
 
     <div class="badges">
       <span class="badge">Current points</span>
-      <span class="badge" id="resetText">Reset: 23:59 ngày 14 (VN)</span>
+      <!-- ✅ ĐÃ ĐỔI "ngày" → "DAY" -->
+      <span class="badge" id="resetText">Reset: 23:59 DAY 14 (VN)</span>
     </div>
 
     <div class="alertBar" id="alertBar">
