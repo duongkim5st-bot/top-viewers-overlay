@@ -27,7 +27,7 @@ body{
   color: var(--text);
 }
 
-/* ===== CARD (VIỀN GOLD) ===== */
+/* ===== CARD ===== */
 .card{
   width: var(--w);
   background: rgba(0,0,0,.28);
@@ -66,6 +66,7 @@ body{
   margin-top: 6px;
   display:flex;
   gap:6px;
+  flex-wrap:wrap;
 }
 .badge{
   font-size: 10px;
@@ -76,17 +77,19 @@ body{
 }
 
 /* ===== TABLE ===== */
-.table{
-  padding: 8px 10px;
-}
+.table{ padding: 8px 10px; }
 
 .hdr{
   display:grid;
   grid-template-columns: 34px 1fr 70px 86px;
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 900;
   color: var(--muted);
+  align-items:center;
 }
+.hdr > div{ text-align:center; }
+.hdr > div:nth-child(2){ text-align:left; } /* cột User canh trái để đọc dễ */
+
 .prizeHdr{ text-align:center; }
 
 .rows{
@@ -95,7 +98,7 @@ body{
   gap: 6px;
 }
 
-/* ===== ROW (NỀN TRONG SUỐT) ===== */
+/* ===== ROW ===== */
 .row{
   display:grid;
   grid-template-columns: 34px 1fr 70px 86px;
@@ -105,22 +108,23 @@ body{
   border-radius: 10px;
 }
 
+/* canh giữa theo yêu cầu */
+.row > div{ text-align:center; }
+.row > .name{ text-align:left; } /* nếu bạn muốn User cũng giữa: đổi left -> center */
+
 /* ===== RANK ===== */
 .rk{
-  text-align:center;
   font-weight: 900;
   font-size: 13px;
 }
 
-/* ICON HUY HIỆU */
-.medal{
-  font-size: 16px;
-}
+/* ICON */
+.medal{ font-size: 16px; }
 .gold{ color: var(--gold); }
 .silver{ color: var(--silver); }
 .bronze{ color: var(--bronze); }
 
-/* ===== NAME (GIỮ MÀU TRẮNG) ===== */
+/* ===== NAME ===== */
 .name{
   font-size: 13px;
   font-weight: 800;
@@ -132,12 +136,11 @@ body{
 /* ===== POINTS ===== */
 .points{
   font-size: 11px;
-  text-align:right;
   color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
 
-/* ===== PRIZE (CHỈ PRIZE ĐỔI MÀU) ===== */
+/* ===== PRIZE ===== */
 @keyframes prizeShift{
   0%{ background-position: 0% 50%; }
   100%{ background-position: 100% 50%; }
@@ -146,14 +149,7 @@ body{
 .prize{
   font-size: 12px;
   font-weight: 900;
-  text-align:center;
-  background: linear-gradient(
-    90deg,
-    #ffd24a,
-    #19ffb4,
-    #9146ff,
-    #ffd24a
-  );
+  background: linear-gradient(90deg,#ffd24a,#19ffb4,#9146ff,#ffd24a);
   background-size: 300% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -161,15 +157,12 @@ body{
   animation: prizeShift 6s linear infinite;
 }
 
-/* TOP 1 prize nhanh hơn */
 .row.top1 .prize{ animation-duration: 2.5s; }
 .row.top2 .prize{ animation-duration: 4s; }
 .row.top3 .prize{ animation-duration: 4s; }
-.row:not(.top1):not(.top2):not(.top3) .prize{
-  animation-duration: 7s;
-}
+.row:not(.top1):not(.top2):not(.top3) .prize{ animation-duration: 7s; }
 
-/* ===== MINI ALERT BAR (TOP 1 vượt mốc) ===== */
+/* ===== MINI ALERT ===== */
 @keyframes popIn{
   0%{ transform: translateY(-6px); opacity:0; }
   100%{ transform: translateY(0); opacity:1; }
@@ -187,10 +180,7 @@ body{
   animation: popIn .25s ease-out;
 }
 .alertBar.show{ display:block; }
-.alertBar .muted{
-  color: var(--muted);
-  font-weight: 800;
-}
+.alertBar .muted{ color: var(--muted); font-weight: 800; }
 
 /* ===== FOOTER ===== */
 .foot{
@@ -218,7 +208,7 @@ body{
 
     <div class="badges">
       <span class="badge">Current points</span>
-      <span class="badge" id="resetText">Reset: Manual (SE)</span>
+      <span class="badge" id="resetText">Reset: 23:59 ngày 14 (VN)</span>
     </div>
 
     <div class="alertBar" id="alertBar">
@@ -250,6 +240,9 @@ body{
 const WEBAPP_URL =
 "https://script.google.com/macros/s/AKfycbyoYia8jIipN-Hq95blwQ8dkimXdy8uoNp_bvq1Ie1l7ZeQB0_QRMjBqsx7gwWg-kej8A/exec";
 const REFRESH_MS = 15000;
+
+// Reset text cố định theo yêu cầu
+document.getElementById("resetText").textContent = "Reset: 23:59 ngày 14 (VN)";
 
 /* ALERT MỐC TOP 1 (POINTS) */
 const MILESTONES = [5000, 10000, 20000, 50000, 100000];
@@ -286,7 +279,6 @@ function showAlert(username, milestone){
   $alertName.textContent = username;
   $alertMilestone.textContent = Number(milestone).toLocaleString("en-US");
   $alertBar.classList.add("show");
-  // tự ẩn sau 6s
   setTimeout(()=> $alertBar.classList.remove("show"), 6000);
 }
 
@@ -312,9 +304,7 @@ function render(data){
     const points = Number(x.total_points||0);
     const prize = Number(x.prize_mcoins||0).toLocaleString("en-US");
 
-    if (i === 0) {
-      checkTop1Alert(name, points);
-    }
+    if (i === 0) checkTop1Alert(name, points);
 
     const div = document.createElement("div");
     div.className = rowClass(rank);
