@@ -87,9 +87,8 @@ body{
   color: var(--muted);
   align-items:center;
 }
-.hdr > div{ text-align:center; }
-.hdr > div:nth-child(2){ text-align:left; } /* User canh trái để dễ đọc */
 
+/* rows container */
 .rows{
   display:flex;
   flex-direction:column;
@@ -105,8 +104,26 @@ body{
   background: rgba(255,255,255,.06);
   border-radius: 10px;
 }
-.row > div{ text-align:center; }
-.row > .name{ text-align:left; } /* muốn giữa luôn thì đổi left -> center */
+
+/* ✅ CANH GIỮA TẤT CẢ CỘT (# / User / Points / Prize) */
+.hdr > div,
+.row > div{
+  text-align:center;
+}
+
+/* User vẫn ellipsis + canh giữa chuẩn */
+.name{
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:6px;
+}
 
 /* ===== RANK ===== */
 .rk{
@@ -120,16 +137,7 @@ body{
 .silver{ color: var(--silver); }
 .bronze{ color: var(--bronze); }
 
-/* ===== NAME ===== */
-.name{
-  font-size: 13px;
-  font-weight: 800;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* ===== POINTS (SỐ THẲNG HÀNG) ===== */
+/* ===== POINTS ===== */
 .points{
   font-size: 11px;
   color: var(--muted);
@@ -258,7 +266,6 @@ function rankCell(rank){
   if(rank===3) return `<div class="rk medal bronze">🥉</div>`;
   return `<div class="rk">${rank}</div>`;
 }
-
 function rowClass(rank){
   if(rank===1) return "row top1";
   if(rank===2) return "row top2";
@@ -291,10 +298,7 @@ function render(data){
   list.forEach((x, i)=>{
     const rank = Number(x.rank||0);
     const name = esc(x.username||"-");
-
-    // ✅ DÙNG POINT (KHÔNG PHÚT)
     const points = Number(x.season_points ?? 0);
-
     const prize = Number(x.prize_mcoins||0).toLocaleString("en-US");
 
     if (i === 0) checkTop1Alert(name, points);
