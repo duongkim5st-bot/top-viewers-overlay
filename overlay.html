@@ -81,16 +81,14 @@ body{
 
 .hdr{
   display:grid;
-  grid-template-columns: 34px 1fr 70px 86px;
+  grid-template-columns: 34px 1fr 76px 86px;
   font-size: 11px;
   font-weight: 900;
   color: var(--muted);
   align-items:center;
 }
 .hdr > div{ text-align:center; }
-.hdr > div:nth-child(2){ text-align:left; } /* cột User canh trái để đọc dễ */
-
-.prizeHdr{ text-align:center; }
+.hdr > div:nth-child(2){ text-align:left; } /* User canh trái để dễ đọc */
 
 .rows{
   display:flex;
@@ -101,16 +99,14 @@ body{
 /* ===== ROW ===== */
 .row{
   display:grid;
-  grid-template-columns: 34px 1fr 70px 86px;
+  grid-template-columns: 34px 1fr 76px 86px;
   align-items:center;
   padding: 8px;
   background: rgba(255,255,255,.06);
   border-radius: 10px;
 }
-
-/* canh giữa theo yêu cầu */
 .row > div{ text-align:center; }
-.row > .name{ text-align:center; } /* nếu bạn muốn User cũng giữa: đổi left -> center */
+.row > .name{ text-align:left; } /* muốn giữa luôn thì đổi left -> center */
 
 /* ===== RANK ===== */
 .rk{
@@ -133,7 +129,7 @@ body{
   text-overflow: ellipsis;
 }
 
-/* ===== POINTS ===== */
+/* ===== POINTS (SỐ THẲNG HÀNG) ===== */
 .points{
   font-size: 11px;
   color: var(--muted);
@@ -145,7 +141,6 @@ body{
   0%{ background-position: 0% 50%; }
   100%{ background-position: 100% 50%; }
 }
-
 .prize{
   font-size: 12px;
   font-weight: 900;
@@ -156,13 +151,12 @@ body{
   color: transparent;
   animation: prizeShift 6s linear infinite;
 }
-
 .row.top1 .prize{ animation-duration: 2.5s; }
 .row.top2 .prize{ animation-duration: 4s; }
 .row.top3 .prize{ animation-duration: 4s; }
 .row:not(.top1):not(.top2):not(.top3) .prize{ animation-duration: 7s; }
 
-/* ===== MINI ALERT ===== */
+/* ===== ALERT BAR ===== */
 @keyframes popIn{
   0%{ transform: translateY(-6px); opacity:0; }
   100%{ transform: translateY(0); opacity:1; }
@@ -208,13 +202,13 @@ body{
 
     <div class="badges">
       <span class="badge">Current points</span>
-      <span class="badge" id="resetText">Reset: 23:59 DAY 14 (VN)</span>
+      <span class="badge" id="resetText">Reset: 23:59 ngày 14 (VN)</span>
     </div>
 
     <div class="alertBar" id="alertBar">
       🚨 <span id="alertName">—</span>
       <span class="muted">vượt mốc</span>
-      <span id="alertMilestone">—</span> LP!
+      <span id="alertMilestone">—</span> Points!
     </div>
   </div>
 
@@ -241,10 +235,7 @@ const WEBAPP_URL =
 "https://script.google.com/macros/s/AKfycbyoYia8jIipN-Hq95blwQ8dkimXdy8uoNp_bvq1Ie1l7ZeQB0_QRMjBqsx7gwWg-kej8A/exec";
 const REFRESH_MS = 15000;
 
-// Reset text cố định theo yêu cầu
-document.getElementById("resetText").textContent = "Reset: 23:59 ngày 14 (VN)";
-
-/* ALERT MỐC TOP 1 (POINTS) */
+/* ALERT MỐC TOP 1 (POINT) */
 const MILESTONES = [5000, 10000, 20000, 50000, 100000];
 let lastTop1Points = 0;
 let nextMilestoneIndex = 0;
@@ -286,7 +277,6 @@ function checkTop1Alert(username, points){
   if (nextMilestoneIndex >= MILESTONES.length) return;
   const milestone = MILESTONES[nextMilestoneIndex];
   if (points >= milestone && lastTop1Points < milestone) {
-    console.log(`🚨 TOP 1: ${username} vượt mốc ${milestone} points`);
     showAlert(username, milestone);
     nextMilestoneIndex++;
   }
@@ -295,13 +285,16 @@ function checkTop1Alert(username, points){
 
 /* ===== RENDER ===== */
 function render(data){
-  const list = data.top10 || [];
+  const list = Array.isArray(data.top10) ? data.top10 : [];
   $rows.innerHTML = "";
 
   list.forEach((x, i)=>{
     const rank = Number(x.rank||0);
     const name = esc(x.username||"-");
-    const points = Number(x.total_points||0);
+
+    // ✅ DÙNG POINT (KHÔNG PHÚT)
+    const points = Number(x.season_points ?? 0);
+
     const prize = Number(x.prize_mcoins||0).toLocaleString("en-US");
 
     if (i === 0) checkTop1Alert(name, points);
@@ -311,7 +304,7 @@ function render(data){
     div.innerHTML = `
       ${rankCell(rank)}
       <div class="name">${name}</div>
-      <div class="points">${points.toLocaleString("en-US")} LP</div>
+      <div class="points">${points.toLocaleString("en-US")}</div>
       <div class="prize">${prize}</div>
     `;
     $rows.appendChild(div);
@@ -325,7 +318,10 @@ async function load(){
     const res = await fetch(WEBAPP_URL, { cache:"no-store" });
     const data = await res.json();
     render(data);
-  }catch(e){}
+  }catch(e){
+    console.log("FETCH ERROR:", e);
+    $updated.textContent = "Updated: ERROR";
+  }
 }
 
 load();
