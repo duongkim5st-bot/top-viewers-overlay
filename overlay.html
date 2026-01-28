@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Top Viewers Overlay</title>
+<title>Top Loyalty Overlay</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800;900&display=swap" rel="stylesheet">
 
@@ -82,7 +82,7 @@ body{
 
 .hdr{
   display:grid;
-  grid-template-columns: 34px 1fr 46px 86px;
+  grid-template-columns: 34px 1fr 70px 86px;
   font-size: 11px;
   font-weight: 800;
   color: var(--muted);
@@ -98,7 +98,7 @@ body{
 /* ===== ROW (NỀN TRONG SUỐT) ===== */
 .row{
   display:grid;
-  grid-template-columns: 34px 1fr 46px 86px;
+  grid-template-columns: 34px 1fr 70px 86px;
   align-items:center;
   padding: 8px;
   background: rgba(255,255,255,.06);
@@ -129,11 +129,12 @@ body{
   text-overflow: ellipsis;
 }
 
-/* ===== TIME ===== */
-.time{
+/* ===== POINTS ===== */
+.points{
   font-size: 11px;
   text-align:right;
   color: var(--muted);
+  font-variant-numeric: tabular-nums;
 }
 
 /* ===== PRIZE (CHỈ PRIZE ĐỔI MÀU) ===== */
@@ -168,6 +169,29 @@ body{
   animation-duration: 7s;
 }
 
+/* ===== MINI ALERT BAR (TOP 1 vượt mốc) ===== */
+@keyframes popIn{
+  0%{ transform: translateY(-6px); opacity:0; }
+  100%{ transform: translateY(0); opacity:1; }
+}
+.alertBar{
+  display:none;
+  margin-top: 6px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  background: rgba(255, 210, 74, .12);
+  border: 1px solid rgba(255, 210, 74, .35);
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--text);
+  animation: popIn .25s ease-out;
+}
+.alertBar.show{ display:block; }
+.alertBar .muted{
+  color: var(--muted);
+  font-weight: 800;
+}
+
 /* ===== FOOTER ===== */
 .foot{
   padding: 8px 10px;
@@ -190,18 +214,25 @@ body{
       </svg>
     </div>
 
-    <div class="title">🏆 <b>TOP VIEWERS</b> – THIS MONTH</div>
+    <div class="title">🏆 <b>TOP LOYALTY</b> – CURRENT SEASON</div>
+
     <div class="badges">
-      <span class="badge">Real time only</span>
-      <span class="badge" id="resetText">Reset …</span>
+      <span class="badge">Current points</span>
+      <span class="badge" id="resetText">Reset: Manual (SE)</span>
+    </div>
+
+    <div class="alertBar" id="alertBar">
+      🚨 <span id="alertName">—</span>
+      <span class="muted">vượt mốc</span>
+      <span id="alertMilestone">—</span> LP!
     </div>
   </div>
 
   <div class="table">
     <div class="hdr">
       <div>#</div>
-      <div>Viewer</div>
-      <div>Time</div>
+      <div>User</div>
+      <div>Points</div>
       <div class="prizeHdr">Prize (MCoins)</div>
     </div>
     <div class="rows" id="rows"></div>
@@ -215,15 +246,24 @@ body{
 </div>
 
 <script>
-/* ===== GIỮ NGUYÊN SCRIPT CŨ ===== */
+/* ===== CONFIG ===== */
 const WEBAPP_URL =
 "https://script.google.com/macros/s/AKfycbyoYia8jIipN-Hq95blwQ8dkimXdy8uoNp_bvq1Ie1l7ZeQB0_QRMjBqsx7gwWg-kej8A/exec";
 const REFRESH_MS = 15000;
 
+/* ALERT MỐC TOP 1 (POINTS) */
+const MILESTONES = [5000, 10000, 20000, 50000, 100000];
+let lastTop1Points = 0;
+let nextMilestoneIndex = 0;
+
+/* ===== DOM ===== */
 const $rows = document.getElementById("rows");
 const $updated = document.getElementById("updated");
-const $resetText = document.getElementById("resetText");
+const $alertBar = document.getElementById("alertBar");
+const $alertName = document.getElementById("alertName");
+const $alertMilestone = document.getElementById("alertMilestone");
 
+/* ===== UTILS ===== */
 const esc = s => String(s ?? "").replace(/[&<>"']/g, m =>
   ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m])
 );
@@ -242,28 +282,51 @@ function rowClass(rank){
   return "row";
 }
 
+function showAlert(username, milestone){
+  $alertName.textContent = username;
+  $alertMilestone.textContent = Number(milestone).toLocaleString("en-US");
+  $alertBar.classList.add("show");
+  // tự ẩn sau 6s
+  setTimeout(()=> $alertBar.classList.remove("show"), 6000);
+}
+
+function checkTop1Alert(username, points){
+  if (nextMilestoneIndex >= MILESTONES.length) return;
+  const milestone = MILESTONES[nextMilestoneIndex];
+  if (points >= milestone && lastTop1Points < milestone) {
+    console.log(`🚨 TOP 1: ${username} vượt mốc ${milestone} points`);
+    showAlert(username, milestone);
+    nextMilestoneIndex++;
+  }
+  lastTop1Points = points;
+}
+
+/* ===== RENDER ===== */
 function render(data){
   const list = data.top10 || [];
   $rows.innerHTML = "";
 
-  list.forEach(x=>{
+  list.forEach((x, i)=>{
     const rank = Number(x.rank||0);
     const name = esc(x.username||"-");
-    const time = Number(x.season_points||0);
+    const points = Number(x.total_points||0);
     const prize = Number(x.prize_mcoins||0).toLocaleString("en-US");
+
+    if (i === 0) {
+      checkTop1Alert(name, points);
+    }
 
     const div = document.createElement("div");
     div.className = rowClass(rank);
     div.innerHTML = `
       ${rankCell(rank)}
       <div class="name">${name}</div>
-      <div class="time">${time}m</div>
+      <div class="points">${points.toLocaleString("en-US")} LP</div>
       <div class="prize">${prize}</div>
     `;
     $rows.appendChild(div);
   });
 
-  if(data.reset_rule) $resetText.textContent = data.reset_rule;
   $updated.textContent = "Updated: " + (data.updated_at || "—");
 }
 
